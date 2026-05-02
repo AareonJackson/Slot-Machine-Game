@@ -1,6 +1,7 @@
 #include "ui/game_window.h"
-#include "core/rng.h"
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 GameWindow::GameWindow(int width, int height, const std::string &title)
     : m_window(sf::VideoMode(width, height), title) {
@@ -22,6 +23,27 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         };
     m_reelView->updateSymbols(initialSymbols);
 
+    if (!m_font.loadFromFile("assets/fonts/Roboto-Regular.ttf")) {
+        std::cerr << "Failed to load font: assets/fonts/Roboto-Regular.ttf" << std::endl;
+    }
+
+    m_balanceText.setFont(m_font);
+    m_balanceText.setCharacterSize(24);
+    m_balanceText.setFillColor(sf::Color::White);
+    m_balanceText.setPosition(30.0f, 15.0f);
+
+    m_betText.setFont(m_font);
+    m_betText.setCharacterSize(24);
+    m_betText.setFillColor(sf::Color::White);
+    m_betText.setPosition(300.0f, 15.0f);
+
+    m_lastWinText.setFont(m_font);
+    m_lastWinText.setCharacterSize(24);
+    m_lastWinText.setFillColor(sf::Color::Yellow);
+    m_lastWinText.setPosition(520.0f, 15.0f);
+
+    updateStatusText(1000.0, 10.0, 0.0);
+
     // Spin button setup
     float btnWidth = 200.0f;
     float btnHeight = 60.0f;
@@ -32,6 +54,10 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
 
     // Define a spin click
     m_spinButton->setOnClick([this]() {
+        if (m_spinCallback) {
+            m_spinCallback();
+        }
+     /*
         std::cout << "Spin Button Clicked! Generating random spin..." << std::endl;
         // Secure random number generator
         RNG rng;
@@ -52,6 +78,7 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
 
         // Update the UI
         m_reelView->updateSymbols(newSymbols);
+        */
     });
 }
 
@@ -93,12 +120,40 @@ void GameWindow::render() {
         m_reelView->draw(m_window);
     }
 
+    m_window.draw(m_balanceText);
+    m_window.draw(m_betText);
+    m_window.draw(m_lastWinText);
+
     if (m_spinButton) {
         m_spinButton->draw(m_window);
     }
 
     // Display window
     m_window.display();
+}
+
+void GameWindow::updateReels(const std::vector<std::vector<std::string>> &symbols) {
+    if (m_reelView) {
+        m_reelView->updateSymbols(symbols);
+    }
+}
+
+void GameWindow::updateStatusText(double balance, double currentBet, double lastWin) {
+    std::ostringstream balanceStream;
+    balanceStream << std::fixed << std::setprecision(2) << "Balance: $" << balance;
+    m_balanceText.setString(balanceStream.str());
+
+    std::ostringstream betStream;
+    betStream << std::fixed << std::setprecision(2) << "Bet: $" << currentBet;
+    m_betText.setString(betStream.str());
+
+    std::ostringstream winStream;
+    winStream << std::fixed << std::setprecision(2) << "Win: $" << lastWin;
+    m_lastWinText.setString(winStream.str());
+}
+
+void GameWindow::setSpinCallback(std::function<void()> callback) {
+    m_spinCallback = std::move(callback);
 }
 
 sf::RenderWindow& GameWindow::getWindow() {

@@ -16,7 +16,7 @@ Button::Button(float x, float y, float width, float height, const std::string &t
     m_shape.setOutlineThickness(3.0f);
 
     // Load Font
-    m_hasFont = m_font.loadFromFile("assets/fonts/arial.ttf");
+    m_hasFont = m_font.loadFromFile("assets/fonts/Roboto-Regular.ttf");
     if (!m_hasFont) m_hasFont = m_font.loadFromFile("/System/Library/Fonts/Supplemental/Arial.ttf");
     if (!m_hasFont) m_hasFont = m_font.loadFromFile("/Library/Fonts/Arial.ttf");
     if (!m_hasFont) m_hasFont = m_font.loadFromFile("/System/Library/Fonts/Monaco.ttf");

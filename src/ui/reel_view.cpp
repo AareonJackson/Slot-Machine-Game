@@ -13,8 +13,8 @@ ReelView::ReelView(int numReels, int numRows, float startX, float startY, float 
 
     // Initialize with empty symbols
     m_symbols.resize(m_numReels, std::vector<std::string>(m_numRows, "???"));
-    // Try to load font from local assests first
-    m_hasFont = m_font.loadFromFile("assets/fonts/arial.ttf");
+    // Try to load font from local assets first
+    m_hasFont = m_font.loadFromFile("assets/fonts/Roboto-Regular.ttf");
     // Fallback 1: Modern MacOS (Big Sur and newer / Apple Silicon)
     if (!m_hasFont) {
         m_hasFont = m_font.loadFromFile("/System/Library/Fonts/Supplemental/Arial.ttf"); // macOS

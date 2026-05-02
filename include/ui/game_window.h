@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <memory>
+#include <functional>
 #include "ui/reel_view.h"
 #include "ui/button.h"
 
@@ -14,6 +15,10 @@ public:
     void pollEvents();
     void render();
 
+    void updateReels(const std::vector<std::vector<std::string>>& symbols);
+    void updateStatusText(double balance, double currentBet, double lastWin);
+    void setSpinCallback(std::function<void()> callback);
+
     // Getter just in case I want to pass the window to other UI components later
     sf::RenderWindow& getWindow();
 
@@ -23,4 +28,11 @@ private:
     // UI Components
     std::unique_ptr<ReelView> m_reelView;
     std::unique_ptr<Button> m_spinButton;
+
+    sf::Font m_font;
+    sf::Text m_balanceText;
+    sf::Text m_betText;
+    sf::Text m_lastWinText;
+
+    std::function<void()> m_spinCallback;
 };
