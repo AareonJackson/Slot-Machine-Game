@@ -127,7 +127,7 @@ Example configuration:
 ## Development Roadmap
 
 - [x] Project setup and architecture design
-- [ ] Core game mechanics
+- [x] Core game mechanics
 - [ ] Basic UI implementation
 - [ ] Reel animations and graphics
 - [ ] Sound effects and music integration
