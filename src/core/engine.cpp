@@ -43,8 +43,13 @@ void Engine::run() {
 }
 
 void Engine::update() {
-    // TODO: ADD GAME LOGIC (SPINNING REELS, CHECKING PAYLINES, ETC.)
+    if (m_state == GameState::Spinning) {
+        animateSpin();
 
+        if (m_spinClock.getElapsedTime().asSeconds() >= 1.5f) {
+            finishSpin();
+        }
+    }
 }
 
 void Engine::render() {
@@ -53,17 +58,32 @@ void Engine::render() {
 }
 
 void Engine::spin() {
+    if (m_state == GameState::Spinning) {
+        return;
+    }
+
     if (m_balance < m_currentBet) {
         std::cout << "Not enough money to spin! Balance: $" << m_balance << std::endl;
         return;
     }
 
     m_balance -= m_currentBet;
+    m_lastWin = 0.0;
+    refreshStatusText();
 
-    std::vector<std::vector<std::string>> spinGrid = generateSpinGrid();
-    m_window->updateReels(spinGrid);
+    m_pendingSpinGrid = generateSpinGrid();
+    m_state = GameState::Spinning;
+    m_spinClock.restart();
 
-    std::vector<WinLine> wins = m_payoutCalculator.calculateWin(spinGrid, m_currentBet);
+    std::cout << "Spin started. Bet: $" << m_currentBet
+              << ", Balance: $" << m_balance << std::endl;
+}
+
+void Engine::finishSpin() {
+
+    m_window->updateReels(m_pendingSpinGrid);
+
+    std::vector<WinLine> wins = m_payoutCalculator.calculateWin(m_pendingSpinGrid, m_currentBet);
 
     double totalWin = 0.0;
     for (const auto& win : wins) {
@@ -75,6 +95,7 @@ void Engine::spin() {
 
     m_lastWin = totalWin;
     m_balance += totalWin;
+    m_state = GameState::Idle;
 
     refreshStatusText();
 
@@ -82,7 +103,16 @@ void Engine::spin() {
     << ", Win: $" << totalWin << ", Balance: $" << m_balance << std::endl;
 }
 
+void Engine::animateSpin() {
+    std::vector<std::vector<std::string>> randomGrid = generateRandomDisplayGrid();
+    m_window->updateReels(randomGrid);
+}
+
 void Engine::increaseBet() {
+    if (m_state == GameState::Spinning) {
+        return;
+    }
+
     if (m_currentBet + m_betStep <= m_maxBet && m_currentBet + m_betStep <= m_balance) {
         m_currentBet += m_betStep;
         m_lastWin = 0.0;
@@ -93,6 +123,10 @@ void Engine::increaseBet() {
 }
 
 void Engine::decreaseBet() {
+    if (m_state == GameState::Spinning) {
+        return;
+    }
+
     if (m_currentBet - m_betStep >= m_minBet) {
         m_currentBet -= m_betStep;
         m_lastWin = 0.0;
@@ -134,5 +168,26 @@ std::vector<std::vector<std::string>> Engine::generateSpinGrid() {
             grid[reel][row] = reelStrip[symbolIndex];
         }
     }
+    return grid;
+}
+
+std::vector<std::vector<std::string>> Engine::generateRandomDisplayGrid() {
+    const auto& reelsConfig = ConfigManager::getInstance().getReelsConfig();
+
+    std::vector<std::vector<std::string>> grid(
+        reelsConfig.num_reels,
+        std::vector<std::string>(reelsConfig.num_visible_rows)
+    );
+
+    for (int reel = 0; reel < reelsConfig.num_reels; ++reel) {
+        const auto& reelStrip = reelsConfig.reel_strips[reel];
+        int reelLength = static_cast<int>(reelStrip.size());
+
+        for (int row = 0; row < reelsConfig.num_visible_rows; ++row) {
+            int randomIndex = m_rng.getRandomInt(0, reelLength - 1);
+            grid[reel][row] = reelStrip[randomIndex];
+        }
+    }
+
     return grid;
 }
