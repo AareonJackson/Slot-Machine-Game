@@ -52,11 +52,43 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
 
     m_spinButton = std::make_unique<Button>(btnX, btnY, btnWidth, btnHeight, "SPIN!");
 
+    float smallBtnWidth = 120.0f;
+    float smallBtnHeight = 50.0f;
+    float betButtonY = btnY + btnHeight + 20.0f;
+
+    m_betDownButton = std::make_unique<Button>(
+        btnX - smallBtnHeight - 20.0f,
+        betButtonY,
+        smallBtnWidth,
+        smallBtnHeight,
+        "BET -"
+    );
+
+    m_betUpButton = std::make_unique<Button>(
+        btnX + btnWidth + 20.0f,
+        betButtonY,
+        smallBtnWidth,
+        smallBtnHeight,
+        "BET +"
+    );
+
     // Define a spin click
     m_spinButton->setOnClick([this]() {
         if (m_spinCallback) {
             m_spinCallback();
         }
+
+        m_betDownButton->setOnClick([this]() {
+            if (m_betDownCallback) {
+                m_betDownCallback();
+            }
+        });
+
+        m_betUpButton->setOnClick([this]() {
+            if (m_betUpCallback) {
+                m_betUpCallback();
+            }
+        });
      /*
         std::cout << "Spin Button Clicked! Generating random spin..." << std::endl;
         // Secure random number generator
@@ -104,10 +136,27 @@ void GameWindow::pollEvents() {
         if (m_spinButton) {
             m_spinButton->handleEvent(event, m_window);
         }
+
+        if (m_betDownButton) {
+            m_betDownButton->handleEvent(event, m_window);
+        }
+
+        if (m_betUpButton) {
+            m_betUpButton->handleEvent(event, m_window);
+        }
     }
+
     // Update UI components
     if (m_spinButton) {
         m_spinButton->update(sf::Mouse::getPosition(m_window));
+    }
+
+    if (m_betDownButton) {
+        m_betDownButton->update(sf::Mouse::getPosition(m_window));
+    }
+
+    if (m_betUpButton) {
+        m_betUpButton->update(sf::Mouse::getPosition(m_window));
     }
 }
 
@@ -126,6 +175,14 @@ void GameWindow::render() {
 
     if (m_spinButton) {
         m_spinButton->draw(m_window);
+    }
+
+    if (m_betDownButton) {
+        m_betDownButton->draw(m_window);
+    }
+
+    if (m_betUpButton) {
+        m_betUpButton->draw(m_window);
     }
 
     // Display window
@@ -154,6 +211,14 @@ void GameWindow::updateStatusText(double balance, double currentBet, double last
 
 void GameWindow::setSpinCallback(std::function<void()> callback) {
     m_spinCallback = std::move(callback);
+}
+
+void GameWindow::setBetUpCallback(std::function<void()> callback) {
+    m_betUpCallback = std::move(callback);
+}
+
+void GameWindow::setBetDownCallback(std::function<void()> callback) {
+    m_betDownCallback = std::move(callback);
 }
 
 sf::RenderWindow& GameWindow::getWindow() {

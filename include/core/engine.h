@@ -17,6 +17,9 @@ private:
     void update();
     void render();
     void spin();
+    void increaseBet();
+    void decreaseBet();
+    void refreshStatusText();
     std::vector<std::vector<std::string>> generateSpinGrid();
 
     std::unique_ptr<GameWindow> m_window;
@@ -27,4 +30,7 @@ private:
     double m_balance = 1000.0;
     double m_currentBet = 10.0;
     double m_lastWin = 0.0;
+    double m_minBet = 1.0;
+    double m_maxBet = 100.0;
+    double m_betStep = 5.0;
 };

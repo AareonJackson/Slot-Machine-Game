@@ -17,10 +17,18 @@ Engine::Engine() {
             gameConfig.gameTitle
         );
     }
+    refreshStatusText();
 
-    m_window->updateStatusText(m_balance, m_currentBet, m_lastWin);
     m_window->setSpinCallback([this]() {
         spin();
+    });
+
+    m_window->setBetUpCallback([this]() {
+        increaseBet();
+    });
+
+    m_window->setBetDownCallback([this]() {
+        decreaseBet();
     });
 }
 
@@ -68,10 +76,36 @@ void Engine::spin() {
     m_lastWin = totalWin;
     m_balance += totalWin;
 
-    m_window->updateStatusText(m_balance, m_currentBet, m_lastWin);
+    refreshStatusText();
 
     std::cout << "Spin complete. Bet: $" << m_currentBet
     << ", Win: $" << totalWin << ", Balance: $" << m_balance << std::endl;
+}
+
+void Engine::increaseBet() {
+    if (m_currentBet + m_betStep <= m_maxBet && m_currentBet + m_betStep <= m_balance) {
+        m_currentBet += m_betStep;
+        m_lastWin = 0.0;
+        refreshStatusText();
+
+        std::cout << "Bet increased to $" << m_currentBet << std::endl;
+    }
+}
+
+void Engine::decreaseBet() {
+    if (m_currentBet - m_betStep >= m_minBet) {
+        m_currentBet -= m_betStep;
+        m_lastWin = 0.0;
+        refreshStatusText();
+
+        std::cout << "Bet decreased to $" << m_currentBet << std::endl;
+    }
+}
+
+void Engine::refreshStatusText() {
+    if (m_window) {
+        m_window->updateStatusText(m_balance, m_currentBet, m_lastWin);
+    }
 }
 
 std::vector<std::vector<std::string>> Engine::generateSpinGrid() {

@@ -18,6 +18,8 @@ public:
     void updateReels(const std::vector<std::vector<std::string>>& symbols);
     void updateStatusText(double balance, double currentBet, double lastWin);
     void setSpinCallback(std::function<void()> callback);
+    void setBetUpCallback(std::function<void()> callback);
+    void setBetDownCallback(std::function<void()> callback);
 
     // Getter just in case I want to pass the window to other UI components later
     sf::RenderWindow& getWindow();
@@ -28,6 +30,8 @@ private:
     // UI Components
     std::unique_ptr<ReelView> m_reelView;
     std::unique_ptr<Button> m_spinButton;
+    std::unique_ptr<Button> m_betUpButton;
+    std::unique_ptr<Button> m_betDownButton;
 
     sf::Font m_font;
     sf::Text m_balanceText;
@@ -35,4 +39,6 @@ private:
     sf::Text m_lastWinText;
 
     std::function<void()> m_spinCallback;
+    std::function<void()> m_betUpCallback;
+    std::function<void()> m_betDownCallback;
 };
