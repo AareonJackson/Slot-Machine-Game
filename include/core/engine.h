@@ -40,6 +40,7 @@ private:
     GameState m_state = GameState::Idle;
     sf::Clock m_spinClock;
     std::vector<std::vector<std::string>> m_pendingSpinGrid;
+    std::vector<bool> m_loggedStoppedReels;
 
     double m_balance = 1000.0;
     double m_currentBet = 10.0;

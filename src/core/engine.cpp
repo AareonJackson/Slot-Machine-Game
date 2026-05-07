@@ -46,7 +46,7 @@ void Engine::update() {
     if (m_state == GameState::Spinning) {
         animateSpin();
 
-        if (m_spinClock.getElapsedTime().asSeconds() >= 1.9f) {
+        if (m_spinClock.getElapsedTime().asSeconds() >= 3.2f) {
             finishSpin();
         }
     }
@@ -72,6 +72,7 @@ void Engine::spin() {
     refreshStatusText();
 
     m_pendingSpinGrid = generateSpinGrid();
+    m_loggedStoppedReels.assign(m_pendingSpinGrid.size(), false);
     m_state = GameState::Spinning;
     m_spinClock.restart();
 
@@ -202,14 +203,22 @@ std::vector<std::vector<std::string>> Engine::generateAnimatedDisplayGrid(float 
     );
 
     const float firstReelStopTime = 0.8f;
-    const float delayBetweenReels = 0.35f;
+    const float delayBetweenReels = 1.0f;
 
     for (int reel = 0; reel < reelsConfig.num_reels; ++reel) {
         const auto& reelStrip = reelsConfig.reel_strips[reel];
         int reelLength = static_cast<int>(reelStrip.size());
 
-        float reelStopTime = firstReelStopTime + (delayBetweenReels);
+        float reelStopTime = firstReelStopTime + static_cast<float>(reel) + delayBetweenReels;
         bool reelHasStopped = elapsedSeconds >= reelStopTime;
+
+        if (reelHasStopped &&
+            reel < static_cast<int>(m_loggedStoppedReels.size()) &&
+            !m_loggedStoppedReels[reel]) {
+            std::cout << "Reel " << reel + 1 << " stopped at "
+                      << elapsedSeconds << "s" << std::endl;
+            m_loggedStoppedReels[reel] = true;
+        }
 
         for (int row = 0; row < reelsConfig.num_visible_rows; ++row) {
             if (reelHasStopped && !m_pendingSpinGrid.empty()) {
