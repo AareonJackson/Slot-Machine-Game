@@ -46,7 +46,7 @@ void Engine::update() {
     if (m_state == GameState::Spinning) {
         animateSpin();
 
-        if (m_spinClock.getElapsedTime().asSeconds() >= 1.5f) {
+        if (m_spinClock.getElapsedTime().asSeconds() >= 1.9f) {
             finishSpin();
         }
     }
@@ -104,8 +104,9 @@ void Engine::finishSpin() {
 }
 
 void Engine::animateSpin() {
-    std::vector<std::vector<std::string>> randomGrid = generateRandomDisplayGrid();
-    m_window->updateReels(randomGrid);
+    float elapsedSeconds = m_spinClock.getElapsedTime().asSeconds();
+    std::vector<std::vector<std::string>> animatedGrid = generateAnimatedDisplayGrid(elapsedSeconds);
+    m_window->updateReels(animatedGrid);
 }
 
 void Engine::increaseBet() {
@@ -189,5 +190,35 @@ std::vector<std::vector<std::string>> Engine::generateRandomDisplayGrid() {
         }
     }
 
+    return grid;
+}
+
+std::vector<std::vector<std::string>> Engine::generateAnimatedDisplayGrid(float elapsedSeconds) {
+    const auto& reelsConfig = ConfigManager::getInstance().getReelsConfig();
+
+    std::vector<std::vector<std::string>> grid(
+        reelsConfig.num_reels,
+        std::vector<std::string>(reelsConfig.num_visible_rows)
+    );
+
+    const float firstReelStopTime = 0.8f;
+    const float delayBetweenReels = 0.35f;
+
+    for (int reel = 0; reel < reelsConfig.num_reels; ++reel) {
+        const auto& reelStrip = reelsConfig.reel_strips[reel];
+        int reelLength = static_cast<int>(reelStrip.size());
+
+        float reelStopTime = firstReelStopTime + (delayBetweenReels);
+        bool reelHasStopped = elapsedSeconds >= reelStopTime;
+
+        for (int row = 0; row < reelsConfig.num_visible_rows; ++row) {
+            if (reelHasStopped && !m_pendingSpinGrid.empty()) {
+                grid[reel][row] = m_pendingSpinGrid[reel][row];
+            } else {
+                int randomIndex = m_rng.getRandomInt(0, reelLength - 1);
+                grid[reel][row] = reelStrip[randomIndex];
+            }
+        }
+    }
     return grid;
 }

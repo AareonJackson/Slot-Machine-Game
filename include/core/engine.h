@@ -30,6 +30,7 @@ private:
     void refreshStatusText();
     std::vector<std::vector<std::string>> generateSpinGrid();
     std::vector<std::vector<std::string>> generateRandomDisplayGrid();
+    std::vector<std::vector<std::string>> generateAnimatedDisplayGrid(float elapsedSeconds);
 
     std::unique_ptr<GameWindow> m_window;
 
