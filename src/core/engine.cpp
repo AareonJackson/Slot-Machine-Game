@@ -70,6 +70,7 @@ void Engine::spin() {
     m_balance -= m_currentBet;
     m_lastWin = 0.0;
     refreshStatusText();
+    m_window->clearHighlightedCells();
 
     m_pendingSpinGrid = generateSpinGrid();
     m_loggedStoppedReels.assign(m_pendingSpinGrid.size(), false);
@@ -98,6 +99,9 @@ void Engine::finishSpin() {
     m_balance += totalWin;
     m_state = GameState::Idle;
 
+    std::vector<std::vector<bool>> highlightedCells = buildWinningCellHighlights(wins);
+    m_window->setHighlightedCells(highlightedCells);
+
     refreshStatusText();
 
     std::cout << "Spin complete. Bet: $" << m_currentBet
@@ -108,6 +112,37 @@ void Engine::animateSpin() {
     float elapsedSeconds = m_spinClock.getElapsedTime().asSeconds();
     std::vector<std::vector<std::string>> animatedGrid = generateAnimatedDisplayGrid(elapsedSeconds);
     m_window->updateReels(animatedGrid);
+}
+
+std::vector<std::vector<bool>> Engine::buildWinningCellHighlights(const std::vector<WinLine>& wins) {
+    const auto& reelsConfig = ConfigManager::getInstance().getReelsConfig();
+    const auto& paylinesConfig = ConfigManager::getInstance().getPaylinesConfig();
+
+    std::vector<std::vector<bool>> highlightedCells(
+        reelsConfig.num_reels,
+        std::vector<bool>(reelsConfig.num_visible_rows, false)
+    );
+
+    for (const auto& win : wins) {
+        if (win.payline_index < 0 ||
+            win.payline_index >= static_cast<int>(paylinesConfig.paylines.size())) {
+            continue;
+        }
+
+        const auto& payline = paylinesConfig.paylines[win.payline_index];
+        for (int reel = 0; reel < win.match_count && reel < static_cast<int>(payline.size()); ++reel) {
+            int row = payline[reel];
+
+            if (reel >= 0 &&
+                reel < reelsConfig.num_reels &&
+                row >= 0 &&
+                row < reelsConfig.num_visible_rows) {
+                highlightedCells[reel][row] = true;
+            }
+        }
+    }
+
+    return highlightedCells;
 }
 
 void Engine::increaseBet() {

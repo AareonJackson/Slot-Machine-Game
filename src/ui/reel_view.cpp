@@ -13,6 +13,7 @@ ReelView::ReelView(int numReels, int numRows, float startX, float startY, float 
 
     // Initialize with empty symbols
     m_symbols.resize(m_numReels, std::vector<std::string>(m_numRows, "???"));
+    m_highlightedCells.resize(m_numReels, std::vector<bool>(m_numRows, false));
     // Try to load font from local assets first
     m_hasFont = m_font.loadFromFile("assets/fonts/Roboto-Regular.ttf");
     // Fallback 1: Modern MacOS (Big Sur and newer / Apple Silicon)
@@ -37,6 +38,16 @@ void ReelView::updateSymbols(const std::vector<std::vector<std::string>>& symbol
     if (symbols.size() == m_numReels && symbols[0].size() == m_numRows) {
         m_symbols = symbols;
     }
+}
+
+void ReelView::setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells) {
+    if (highlightedCells.size() == m_numReels && highlightedCells[0].size() == m_numRows) {
+        m_highlightedCells = highlightedCells;
+    }
+}
+
+void ReelView::clearHighlightedCells() {
+    m_highlightedCells.assign(m_numReels, std::vector<bool>(m_numRows, false));
 }
 
 sf::Color ReelView::getSymbolColor(const std::string& symbol) {
@@ -67,8 +78,19 @@ void ReelView::draw(sf::RenderWindow& window) {
             sf::RectangleShape cell(sf::Vector2f(cellWidth, cellHeight));
             cell.setPosition(cellX, cellY);
             cell.setFillColor(sf::Color::White); // White background
-            cell.setOutlineColor(sf::Color(100, 100, 100)); // Dark grey outline
-            cell.setOutlineThickness(2.0f);
+
+            // cell.setOutlineColor(sf::Color(100, 100, 100)); // Dark grey outline
+            // cell.setOutlineThickness(2.0f);
+            // window.draw(cell);
+
+            if (m_highlightedCells[reel][row]) {
+                cell.setOutlineColor(sf::Color(255, 215, 0)); // Gold highlight
+                cell.setOutlineThickness(6.0f);
+            } else {
+                cell.setOutlineColor(sf::Color(100, 100, 100)); // Dark grey outline
+                cell.setOutlineThickness(2.0f);
+            }
+
             window.draw(cell);
 
             // Draw a colored inner rectangle to represent the graphical symbol

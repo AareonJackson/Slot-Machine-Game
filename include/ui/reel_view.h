@@ -11,6 +11,9 @@ public:
     // Outer vector is reels (columns), inner vector is rows.
     void updateSymbols(const std::vector<std::vector<std::string>>& symbols);
 
+    void setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells);
+    void clearHighlightedCells();
+
     // Draw the reel
     void draw(sf::RenderWindow& window);
 
@@ -23,6 +26,7 @@ private:
     float m_height;
 
     std::vector<std::vector<std::string>> m_symbols;
+    std::vector<std::vector<bool>> m_highlightedCells;
 
     // SFML Graphics objects.
     sf::RectangleShape m_machineFrame;

@@ -31,6 +31,7 @@ private:
     std::vector<std::vector<std::string>> generateSpinGrid();
     std::vector<std::vector<std::string>> generateRandomDisplayGrid();
     std::vector<std::vector<std::string>> generateAnimatedDisplayGrid(float elapsedSeconds);
+    std::vector<std::vector<bool>> buildWinningCellHighlights(const std::vector<WinLine>& wins);
 
     std::unique_ptr<GameWindow> m_window;
 

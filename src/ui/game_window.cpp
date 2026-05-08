@@ -195,6 +195,18 @@ void GameWindow::updateReels(const std::vector<std::vector<std::string>> &symbol
     }
 }
 
+void GameWindow::setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells) {
+    if (m_reelView) {
+        m_reelView->setHighlightedCells(highlightedCells);
+    }
+}
+
+void GameWindow::clearHighlightedCells() {
+    if (m_reelView) {
+        m_reelView->clearHighlightedCells();
+    }
+}
+
 void GameWindow::updateStatusText(double balance, double currentBet, double lastWin) {
     std::ostringstream balanceStream;
     balanceStream << std::fixed << std::setprecision(2) << "Balance: $" << balance;

@@ -17,6 +17,8 @@ public:
 
     void updateReels(const std::vector<std::vector<std::string>>& symbols);
     void updateStatusText(double balance, double currentBet, double lastWin);
+    void setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells);
+    void clearHighlightedCells();
     void setSpinCallback(std::function<void()> callback);
     void setBetUpCallback(std::function<void()> callback);
     void setBetDownCallback(std::function<void()> callback);
