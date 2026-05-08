@@ -2,6 +2,7 @@
 #include "ui/game_window.h"
 #include "core/rng.h"
 #include "core/payout.h"
+#include "audio/sound_manager.h"
 #include <SFML/System/Clock.hpp>
 #include <memory>
 #include <vector>
@@ -37,6 +38,7 @@ private:
 
     RNG m_rng;
     PayoutCalculator m_payoutCalculator;
+    SoundManager m_soundManager;
 
     GameState m_state = GameState::Idle;
     sf::Clock m_spinClock;

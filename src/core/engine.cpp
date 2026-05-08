@@ -17,6 +17,12 @@ Engine::Engine() {
             gameConfig.gameTitle
         );
     }
+
+    m_soundManager.loadSound("spin", "assets/audio/spin.wav");
+    m_soundManager.loadSound("reel_stop", "assets/audio/reel_stop.wav");
+    m_soundManager.loadSound("win", "assets/audio/win.wav");
+    m_soundManager.setVolume(70.0f);
+
     refreshStatusText();
 
     m_window->setSpinCallback([this]() {
@@ -77,6 +83,8 @@ void Engine::spin() {
     m_state = GameState::Spinning;
     m_spinClock.restart();
 
+    m_soundManager.playSound("spin");
+
     std::cout << "Spin started. Bet: $" << m_currentBet
               << ", Balance: $" << m_balance << std::endl;
 }
@@ -98,6 +106,10 @@ void Engine::finishSpin() {
     m_lastWin = totalWin;
     m_balance += totalWin;
     m_state = GameState::Idle;
+
+    if (totalWin > 0.0) {
+        m_soundManager.playSound("win");
+    }
 
     std::vector<std::vector<bool>> highlightedCells = buildWinningCellHighlights(wins);
     m_window->setHighlightedCells(highlightedCells);
@@ -252,6 +264,9 @@ std::vector<std::vector<std::string>> Engine::generateAnimatedDisplayGrid(float 
             !m_loggedStoppedReels[reel]) {
             std::cout << "Reel " << reel + 1 << " stopped at "
                       << elapsedSeconds << "s" << std::endl;
+
+            m_soundManager.playSound("reel_stop");
+
             m_loggedStoppedReels[reel] = true;
         }
 
