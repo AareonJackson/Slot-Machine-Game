@@ -256,7 +256,7 @@ std::vector<std::vector<std::string>> Engine::generateAnimatedDisplayGrid(float 
         const auto& reelStrip = reelsConfig.reel_strips[reel];
         int reelLength = static_cast<int>(reelStrip.size());
 
-        float reelStopTime = firstReelStopTime + static_cast<float>(reel) + delayBetweenReels;
+        float reelStopTime = firstReelStopTime + static_cast<float>(reel) * delayBetweenReels;
         bool reelHasStopped = elapsedSeconds >= reelStopTime;
 
         if (reelHasStopped &&
