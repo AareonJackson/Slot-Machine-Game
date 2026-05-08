@@ -2,7 +2,11 @@
 
 ## Project Overview
 
-This repository contains a full-featured Las Vegas-style slot machine game built primarily with C++. The game delivers an authentic casino experience with realistic mechanics, engaging graphics, and immersive sound effects. (In-Progress)
+This repository will contain a full-featured Las Vegas-style slot machine game built primarily with C++. 
+The game will deliver an authentic casino experience with realistic mechanics, engaging graphics, and immersive sound effects. (In-Progress)
+
+Recent Screenshot:
+
 
 ## Features
 
