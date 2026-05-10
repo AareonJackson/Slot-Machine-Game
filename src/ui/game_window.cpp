@@ -57,7 +57,7 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
     float betButtonY = btnY + btnHeight + 20.0f;
 
     m_betDownButton = std::make_unique<Button>(
-        btnX - smallBtnHeight - 20.0f,
+        btnX - smallBtnWidth - 20.0f,
         betButtonY,
         smallBtnWidth,
         smallBtnHeight,
@@ -72,45 +72,23 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         "BET +"
     );
 
-    // Define a spin click
+    // Define button click callbacks
     m_spinButton->setOnClick([this]() {
         if (m_spinCallback) {
             m_spinCallback();
         }
+    });
 
-        m_betDownButton->setOnClick([this]() {
-            if (m_betDownCallback) {
-                m_betDownCallback();
-            }
-        });
-
-        m_betUpButton->setOnClick([this]() {
-            if (m_betUpCallback) {
-                m_betUpCallback();
-            }
-        });
-     /*
-        std::cout << "Spin Button Clicked! Generating random spin..." << std::endl;
-        // Secure random number generator
-        RNG rng;
-
-        // Define the available symbols on the slot machine
-        std::vector<std::string> possibleSymbols = {"SEVEN", "CHERRY", "BAR", "LEMON", "BELL"};
-
-        // A 3x3 matrix for the new spin
-        std::vector<std::vector<std::string>> newSymbols(3, std::vector<std::string>(3));
-
-        // Randomly fill the matrix using the RNG
-        for (int reel = 0; reel < 3; ++reel) {
-            for (int row = 0; row < 3; ++row) {
-                int randomIndex = rng.getRandomInt(0, possibleSymbols.size() - 1);
-                newSymbols[reel][row] = possibleSymbols[randomIndex];
-            }
+    m_betDownButton->setOnClick([this]() {
+        if (m_betDownCallback) {
+            m_betDownCallback();
         }
+    });
 
-        // Update the UI
-        m_reelView->updateSymbols(newSymbols);
-        */
+    m_betUpButton->setOnClick([this]() {
+        if (m_betUpCallback) {
+            m_betUpCallback();
+        }
     });
 }
 
