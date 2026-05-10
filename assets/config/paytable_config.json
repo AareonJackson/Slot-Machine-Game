@@ -1,9 +1,9 @@
 {
   "payouts": [
-    {"symbol":  "SEVEN", "match_count":  3, "multiplier":  100},
-    {"symbol":  "BAR", "match_count":  3, "multiplier":  50},
-    {"symbol":  "BELL", "match_count":  3, "multiplier":  20},
-    {"symbol":  "CHERRY", "match_count":  3, "multiplier":  10},
-    {"symbol":  "CHERRY", "match_count":  2, "multiplier":  2}
+    {"symbol":  "SEVEN", "match_count":  3, "multiplier":  5},
+    {"symbol":  "BAR", "match_count":  3, "multiplier":  3},
+    {"symbol":  "BELL", "match_count":  3, "multiplier":  2},
+    {"symbol":  "LEMON", "match_count":  3, "multiplier":  0.5},
+    {"symbol":  "CHERRY", "match_count":  3, "multiplier":  1}
   ]
 }
