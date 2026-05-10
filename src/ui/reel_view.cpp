@@ -14,6 +14,9 @@ ReelView::ReelView(int numReels, int numRows, float startX, float startY, float 
     // Initialize with empty symbols
     m_symbols.resize(m_numReels, std::vector<std::string>(m_numRows, "???"));
     m_highlightedCells.resize(m_numReels, std::vector<bool>(m_numRows, false));
+    
+    loadSymbolTextures();
+    
     // Try to load font from local assets first
     m_hasFont = m_font.loadFromFile("assets/fonts/Roboto-Regular.ttf");
     // Fallback 1: Modern MacOS (Big Sur and newer / Apple Silicon)
@@ -48,6 +51,66 @@ void ReelView::setHighlightedCells(const std::vector<std::vector<bool>>& highlig
 
 void ReelView::clearHighlightedCells() {
     m_highlightedCells.assign(m_numReels, std::vector<bool>(m_numRows, false));
+}
+
+void ReelView::loadSymbolTextures() {
+    const std::map<std::string, std::string> textureFiles = {
+        {"SEVEN", "assets/graphics/symbols/seven.png"},
+        {"CHERRY", "assets/graphics/symbols/cherry.png"},
+        {"BAR", "assets/graphics/symbols/bar.png"},
+        {"LEMON", "assets/graphics/symbols/lemon.png"},
+        {"BELL", "assets/graphics/symbols/bell.png"} 
+    };
+    
+    for (const auto& [symbol, filePath] : textureFiles) {
+        sf::Texture texture;
+        
+        if (!texture.loadFromFile(filePath)) {
+            std::cerr << "Failed to load texture: " << filePath << std::endl;
+            continue;
+        }
+        
+        texture.setSmooth(true);
+        m_symbolTextures[symbol] = std::move(texture);
+    }
+}
+
+bool ReelView::hasTextureForSymbol(const std::string& symbol) const {
+    return m_symbolTextures.find(symbol) != m_symbolTextures.end();
+}
+
+void ReelView::drawSymbolImage(sf::RenderWindow& window, const std::string& symbol, float cellX, float cellY, float cellWidth, float cellHeight) {
+    auto textureIt = m_symbolTextures.find(symbol);
+
+    if (textureIt == m_symbolTextures.end()) {
+        return;
+    }
+
+    sf::Sprite sprite;
+    sprite.setTexture(textureIt->second);
+
+    sf::FloatRect spriteBounds = sprite.getLocalBounds();
+
+    if (spriteBounds.width <= 0.0f || spriteBounds.height <= 0.0f) {
+        return;
+    }
+
+    float maxImageWidth = cellWidth * 0.72f;
+    float maxImageHeight = cellHeight * 0.62f;
+
+    float scaleX = maxImageWidth / spriteBounds.width;
+    float scaleY = maxImageHeight / spriteBounds.height;
+    float scale = std::min(scaleX, scaleY);
+
+    sprite.setScale(scale, scale);
+
+    sf::FloatRect scaledBounds = sprite.getGlobalBounds();
+    sprite.setPosition(
+        cellX + (cellWidth - scaledBounds.width) / 2.0f,
+        cellY + cellHeight * 0.08f
+    );
+
+    window.draw(sprite);
 }
 
 sf::Color ReelView::getSymbolColor(const std::string& symbol) {
@@ -93,15 +156,21 @@ void ReelView::draw(sf::RenderWindow& window) {
 
             window.draw(cell);
 
-            // Draw a colored inner rectangle to represent the graphical symbol
-            sf::RectangleShape graphic(sf::Vector2f(cellWidth * 0.6f, cellHeight * 0.6f));
-            graphic.setPosition(cellX + cellWidth * 0.2f, cellY + cellHeight * 0.1f);
-            graphic.setFillColor(getSymbolColor(m_symbols[reel][row]));
-            window.draw(graphic);
+            const std::string& symbol = m_symbols[reel][row];
+
+            if (hasTextureForSymbol(symbol)) {
+                drawSymbolImage(window, symbol, cellX, cellY, cellWidth, cellHeight);
+            } else {
+                // Fallback if an image is missing: draw a colored inner rectangle
+                sf::RectangleShape graphic(sf::Vector2f(cellWidth * 0.6f, cellHeight * 0.6f));
+                graphic.setPosition(cellX + cellWidth * 0.2f, cellY + cellHeight * 0.1f);
+                graphic.setFillColor(getSymbolColor(symbol));
+                window.draw(graphic);
+            }
 
             // Draw text identifier below the graphic if font is loaded
             if (m_hasFont) {
-                sf::Text text(m_symbols[reel][row], m_font, 18);
+                sf::Text text(symbol, m_font, 18);
                 text.setFillColor(sf::Color::Black);
 
                 // Center the text at the bottom of the cell

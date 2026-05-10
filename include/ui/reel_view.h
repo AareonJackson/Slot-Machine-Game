@@ -32,6 +32,13 @@ private:
     sf::RectangleShape m_machineFrame;
     sf::Font m_font;
     bool m_hasFont;
+    
+    std::map<std::string, sf::Texture> m_symbolTextures;
+
+    void loadSymbolTextures();
+    bool hasTextureForSymbol(const std::string& symbol) const;
+    void drawSymbolImage(sf::RenderWindow& window, const std::string& symbol, float cellX, float cellY, float cellWidth, float cellHeight);
+
 
     // Helper to get the color based on symbol string.
     sf::Color getSymbolColor(const std::string& symbol);
