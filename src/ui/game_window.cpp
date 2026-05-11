@@ -42,7 +42,13 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
     m_lastWinText.setFillColor(sf::Color::Yellow);
     m_lastWinText.setPosition(520.0f, 15.0f);
 
+    m_statsText.setFont(m_font);
+    m_statsText.setCharacterSize(18);
+    m_statsText.setFillColor(sf::Color::White);
+    m_statsText.setPosition(30.0f, static_cast<float>(height) - 35.0f);
+
     updateStatusText(1000.0, 10.0, 0.0);
+    updateStatsText(0, 0.0, 0.0, 0.0);
 
     // Spin button setup
     float btnWidth = 200.0f;
@@ -150,6 +156,7 @@ void GameWindow::render() {
     m_window.draw(m_balanceText);
     m_window.draw(m_betText);
     m_window.draw(m_lastWinText);
+    m_window.draw(m_statsText);
 
     if (m_spinButton) {
         m_spinButton->draw(m_window);
@@ -197,6 +204,19 @@ void GameWindow::updateStatusText(double balance, double currentBet, double last
     std::ostringstream winStream;
     winStream << std::fixed << std::setprecision(2) << "Win: $" << lastWin;
     m_lastWinText.setString(winStream.str());
+}
+
+void GameWindow::updateStatsText(int totalSpins, double totalWagered, double totalWon, double biggestWin) {
+    double net = totalWon - totalWagered;
+
+    std::ostringstream statsStream;
+    statsStream << std::fixed << std::setprecision(2)
+                << "Spins: " << totalSpins
+                << " |  Wagered: $" << totalWagered
+                << " |  Won: $" << totalWon
+                << " |  Net: $" << net
+                << " |  Best: $" << biggestWin;
+    m_statsText.setString(statsStream.str());
 }
 
 void GameWindow::setSpinCallback(std::function<void()> callback) {

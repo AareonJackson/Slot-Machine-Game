@@ -17,6 +17,7 @@ public:
 
     void updateReels(const std::vector<std::vector<std::string>>& symbols);
     void updateStatusText(double balance, double currentBet, double lastWin);
+    void updateStatsText(int totalSpins, double totalWagered, double totalWon, double biggestWin);
     void setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells);
     void clearHighlightedCells();
     void setSpinCallback(std::function<void()> callback);
@@ -39,6 +40,7 @@ private:
     sf::Text m_balanceText;
     sf::Text m_betText;
     sf::Text m_lastWinText;
+    sf::Text m_statsText;
 
     std::function<void()> m_spinCallback;
     std::function<void()> m_betUpCallback;

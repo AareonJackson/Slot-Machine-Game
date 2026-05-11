@@ -24,6 +24,7 @@ Engine::Engine() {
     m_soundManager.setVolume(70.0f);
 
     refreshStatusText();
+    refreshStatsText();
 
     m_window->setSpinCallback([this]() {
         spin();
@@ -107,6 +108,14 @@ void Engine::finishSpin() {
     m_balance += totalWin;
     m_state = GameState::Idle;
 
+    m_totalSpins++;
+    m_totalWagered += m_currentBet;
+    m_totalWon += totalWin;
+
+    if (totalWin > m_biggestWin) {
+        m_biggestWin = totalWin;
+    }
+
     if (totalWin > 0.0) {
         m_soundManager.playSound("win");
     }
@@ -115,6 +124,7 @@ void Engine::finishSpin() {
     m_window->setHighlightedCells(highlightedCells);
 
     refreshStatusText();
+    refreshStatsText();
 
     std::cout << "Spin complete. Bet: $" << m_currentBet
     << ", Win: $" << totalWin << ", Balance: $" << m_balance << std::endl;
@@ -188,6 +198,12 @@ void Engine::decreaseBet() {
 void Engine::refreshStatusText() {
     if (m_window) {
         m_window->updateStatusText(m_balance, m_currentBet, m_lastWin);
+    }
+}
+
+void Engine::refreshStatsText() {
+    if (m_window) {
+        m_window->updateStatsText(m_totalSpins, m_totalWagered, m_totalWon, m_biggestWin);
     }
 }
 

@@ -29,6 +29,7 @@ private:
     void increaseBet();
     void decreaseBet();
     void refreshStatusText();
+    void refreshStatsText();
     std::vector<std::vector<std::string>> generateSpinGrid();
     std::vector<std::vector<std::string>> generateRandomDisplayGrid();
     std::vector<std::vector<std::string>> generateAnimatedDisplayGrid(float elapsedSeconds);
@@ -51,4 +52,9 @@ private:
     double m_minBet = 1.0;
     double m_maxBet = 100.0;
     double m_betStep = 5.0;
+
+    int m_totalSpins = 0;
+    double m_totalWagered = 0.0;
+    double m_totalWon = 0.0;
+    double m_biggestWin = 0.0;
 };
