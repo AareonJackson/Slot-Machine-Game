@@ -1,5 +1,6 @@
 #include "core/engine.h"
 #include "config/config_manager.h"
+#include "core/debug_log.h"
 #include <iostream>
 #include <sstream>
 
@@ -88,8 +89,8 @@ void Engine::spin() {
 
     m_soundManager.playSound("spin");
 
-    std::cout << "Spin started. Bet: $" << m_currentBet
-              << ", Balance: $" << m_balance << std::endl;
+    DEBUG_LOG("Spin started. Bet: $" << m_currentBet
+              << ", Balance: $" << m_balance);
 }
 
 void Engine::finishSpin() {
@@ -102,8 +103,8 @@ void Engine::finishSpin() {
     for (const auto& win : wins) {
         totalWin += win.win_amount;
 
-        std::cout << "Winning payline " << win.payline_index << ": $" << win.match_count << "x " << win.symbol
-        << " pays $" << win.win_amount << std::endl;
+        DEBUG_LOG("Winning payline " << win.payline_index << ": $" << win.match_count << "x " << win.symbol
+        << " pays $" << win.win_amount);
     }
 
     m_lastWin = totalWin;
@@ -128,8 +129,8 @@ void Engine::finishSpin() {
     refreshStatusText();
     refreshStatsText();
 
-    std::cout << "Spin complete. Bet: $" << m_currentBet
-    << ", Win: $" << totalWin << ", Balance: $" << m_balance << std::endl;
+    DEBUG_LOG("Spin complete. Bet: $" << m_currentBet
+    << ", Win: $" << totalWin << ", Balance: $" << m_balance);
 }
 
 void Engine::animateSpin() {
@@ -179,7 +180,7 @@ void Engine::increaseBet() {
         m_lastWin = 0.0;
         refreshStatusText();
 
-        std::cout << "Bet increased to $" << m_currentBet << std::endl;
+       DEBUG_LOG("Bet increased to $" << m_currentBet);
     }
 }
 
@@ -193,7 +194,7 @@ void Engine::decreaseBet() {
         m_lastWin = 0.0;
         refreshStatusText();
 
-        std::cout << "Bet decreased to $" << m_currentBet << std::endl;
+        DEBUG_LOG("Bet decreased to $" << m_currentBet);
     }
 }
 
@@ -306,8 +307,8 @@ std::vector<std::vector<std::string>> Engine::generateAnimatedDisplayGrid(float 
         if (reelHasStopped &&
             reel < static_cast<int>(m_loggedStoppedReels.size()) &&
             !m_loggedStoppedReels[reel]) {
-            std::cout << "Reel " << reel + 1 << " stopped at "
-                      << elapsedSeconds << "s" << std::endl;
+            DEBUG_LOG("Reel " << reel + 1 << " stopped at "
+                      << elapsedSeconds << "s");
 
             m_soundManager.playSound("reel_stop");
 

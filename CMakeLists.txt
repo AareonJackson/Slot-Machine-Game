@@ -10,6 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Options
 option(BUILD_TESTS "Build test programs" ON)
 option(BUILD_DOCS "Build documentation" OFF)
+option(ENABLE_DEBUG_LOGS "Enable debug console logging" OFF)
 
 # Output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -113,6 +114,12 @@ set(HEADERS
 
 # Main executable
 add_executable(SlotMachine ${SOURCES} ${HEADERS})
+
+if(ENABLE_DEBUG_LOGS)
+    target_compile_definitions(SlotMachine PRIVATE ENABLE_DEBUG_LOGS=1)
+else()
+    target_compile_definitions(SlotMachine PRIVATE ENABLE_DEBUG_LOGS=0)
+endif()
 
 # Link libraries
 target_link_libraries(SlotMachine
