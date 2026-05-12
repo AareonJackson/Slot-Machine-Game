@@ -7,7 +7,8 @@ This repository will contain a full-featured Las Vegas-style slot machine game b
 The game will deliver an authentic casino experience with realistic mechanics, engaging graphics, and immersive sound effects. (In-Progress)
 
 Recent Screenshot:
-<img width="640" height="354" alt="SlotMachine-Screenshot3" src="https://github.com/user-attachments/assets/16ed4df7-faa2-407e-a458-ce53bc2be852" />
+
+<img width="640" height="354" alt="SlotMachine-Screenshot4" src="https://github.com/user-attachments/assets/23c0644f-358b-4248-976e-619eeb2e805d"/>
 
 
 ## Features
