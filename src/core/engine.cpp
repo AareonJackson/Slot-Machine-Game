@@ -1,6 +1,7 @@
 #include "core/engine.h"
 #include "config/config_manager.h"
 #include <iostream>
+#include <sstream>
 
 Engine::Engine() {
     auto& config = ConfigManager::getInstance();
@@ -25,6 +26,7 @@ Engine::Engine() {
 
     refreshStatusText();
     refreshStatsText();
+    m_window->updatePaytableText(buildPaytableText());
 
     m_window->setSpinCallback([this]() {
         spin();
@@ -205,6 +207,32 @@ void Engine::refreshStatsText() {
     if (m_window) {
         m_window->updateStatsText(m_totalSpins, m_totalWagered, m_totalWon, m_biggestWin);
     }
+}
+
+std::string Engine::buildPaytableText() const {
+    const auto& paytableConfig = ConfigManager::getInstance().getPaytableConfig();
+
+    std::ostringstream stream;
+    stream << "PAYTABLE / HELP\n\n";
+    stream << "Match symbols from left to right on active paylines.\n";
+    stream <<"Payout = Bet x Multiplier\n\n";
+    stream << "PAYOUTS:\n\n";
+
+    for (const auto& rule : paytableConfig.payouts) {
+        stream << rule.match_count << "x "
+               << rule.symbol
+               << " pays "
+               << rule.multiplier
+               << "x bet\n";
+    }
+
+    stream << "\nCONTROLS:\n";
+    stream << "SPIN : Start a new spin\n";
+    stream << "BET + : Increase bet\n";
+    stream << "BET - : Decrease bet\n";
+    stream << "HELP : Show/hide this screen\n";
+
+    return stream.str();
 }
 
 std::vector<std::vector<std::string>> Engine::generateSpinGrid() {

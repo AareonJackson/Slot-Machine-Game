@@ -78,6 +78,26 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         "BET +"
     );
 
+    m_helpButton = std::make_unique<Button>(
+        static_cast<float>(width) - 150.0f,
+        static_cast<float>(height) - 70.0f,
+        120.0f,
+        50.0f,
+        "HELP"
+    );
+
+    m_paytableOverlay.setPosition(100.0f, 80.0f);
+    m_paytableOverlay.setSize(sf::Vector2f(static_cast<float>(width) - 200.0f, static_cast<float>(height) - 160.0f));
+    m_paytableOverlay.setFillColor(sf::Color(0, 0, 0, 220));
+    m_paytableOverlay.setOutlineColor(sf::Color(255, 215, 0));
+    m_paytableOverlay.setOutlineThickness(4.0f);
+
+    m_paytableText.setFont(m_font);
+    m_paytableText.setCharacterSize(22);
+    m_paytableText.setFillColor(sf::Color::White);
+    m_paytableText.setPosition(130.0f, 110.0f);
+    m_paytableText.setString("PAYTABLE\n\nLoading...");
+
     // Define button click callbacks
     m_spinButton->setOnClick([this]() {
         if (m_spinCallback) {
@@ -95,6 +115,10 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         if (m_betUpCallback) {
             m_betUpCallback();
         }
+    });
+
+    m_helpButton->setOnClick([this]() {
+        m_showPaytable = !m_showPaytable;
     });
 }
 
@@ -128,6 +152,10 @@ void GameWindow::pollEvents() {
         if (m_betUpButton) {
             m_betUpButton->handleEvent(event, m_window);
         }
+
+        if (m_helpButton) {
+            m_helpButton->handleEvent(event, m_window);
+        }
     }
 
     // Update UI components
@@ -141,6 +169,10 @@ void GameWindow::pollEvents() {
 
     if (m_betUpButton) {
         m_betUpButton->update(sf::Mouse::getPosition(m_window));
+    }
+
+    if (m_helpButton) {
+        m_helpButton->update(sf::Mouse::getPosition(m_window));
     }
 }
 
@@ -168,6 +200,15 @@ void GameWindow::render() {
 
     if (m_betUpButton) {
         m_betUpButton->draw(m_window);
+    }
+
+    if (m_helpButton) {
+        m_helpButton->draw(m_window);
+    }
+
+    if (m_showPaytable) {
+        m_window.draw(m_paytableOverlay);
+        m_window.draw(m_paytableText);
     }
 
     // Display window
@@ -217,6 +258,10 @@ void GameWindow::updateStatsText(int totalSpins, double totalWagered, double tot
                 << " |  Net: $" << net
                 << " |  Best: $" << biggestWin;
     m_statsText.setString(statsStream.str());
+}
+
+void GameWindow::updatePaytableText(const std::string& paytableText) {
+    m_paytableText.setString(paytableText);
 }
 
 void GameWindow::setSpinCallback(std::function<void()> callback) {
