@@ -26,6 +26,9 @@ private:
     void spin();
     void finishSpin();
     void animateSpin();
+    void toggleAutoPlay();
+    void updateAutoPlay();
+    bool canStartSpin() const;
     void increaseBet();
     void decreaseBet();
     void refreshStatusText();
@@ -44,6 +47,7 @@ private:
 
     GameState m_state = GameState::Idle;
     sf::Clock m_spinClock;
+    sf::Clock m_autoPlayClock;
     std::vector<std::vector<std::string>> m_pendingSpinGrid;
     std::vector<bool> m_loggedStoppedReels;
 
@@ -58,4 +62,7 @@ private:
     double m_totalWagered = 0.0;
     double m_totalWon = 0.0;
     double m_biggestWin = 0.0;
+
+    bool m_autoPlayEnabled = false;
+    float m_autoPlayDelaySeconds = 0.75f;
 };

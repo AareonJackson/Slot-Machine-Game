@@ -40,6 +40,10 @@ Engine::Engine() {
     m_window->setBetDownCallback([this]() {
         decreaseBet();
     });
+    
+    m_window->setAutoPlayCallback([this]() {
+        toggleAutoPlay();
+    });
 }
 
 Engine::~Engine() = default;
@@ -60,6 +64,8 @@ void Engine::update() {
             finishSpin();
         }
     }
+
+    updateAutoPlay();
 }
 
 void Engine::render() {
@@ -67,13 +73,16 @@ void Engine::render() {
     m_window->render();
 }
 
-void Engine::spin() {
-    if (m_state == GameState::Spinning) {
-        return;
-    }
+bool Engine::canStartSpin() const {
+    return m_state == GameState::Idle && m_balance >= m_currentBet;
+}
 
-    if (m_balance < m_currentBet) {
-        std::cout << "Not enough money to spin! Balance: $" << m_balance << std::endl;
+void Engine::spin() {
+    if (!canStartSpin()) {
+        if (m_balance < m_currentBet) {
+            m_autoPlayEnabled = false;
+            DEBUG_LOG("Not enough money to spin! Balance: $" << m_balance);
+        }
         return;
     }
 
@@ -129,6 +138,10 @@ void Engine::finishSpin() {
     refreshStatusText();
     refreshStatsText();
 
+    if (m_autoPlayEnabled) {
+        m_autoPlayClock.restart();
+    }
+
     DEBUG_LOG("Spin complete. Bet: $" << m_currentBet
     << ", Win: $" << totalWin << ", Balance: $" << m_balance);
 }
@@ -137,6 +150,38 @@ void Engine::animateSpin() {
     float elapsedSeconds = m_spinClock.getElapsedTime().asSeconds();
     std::vector<std::vector<std::string>> animatedGrid = generateAnimatedDisplayGrid(elapsedSeconds);
     m_window->updateReels(animatedGrid);
+}
+
+void Engine::toggleAutoPlay() {
+    m_autoPlayEnabled = !m_autoPlayEnabled;
+    if (m_autoPlayEnabled) {
+        if (!canStartSpin()) {
+            m_autoPlayEnabled = false;
+            return;
+        }
+
+        m_autoPlayClock.restart();
+        spin();
+    }
+}
+
+void Engine::updateAutoPlay() {
+    if (!m_autoPlayEnabled) {
+        return;
+    }
+
+    if (m_state != GameState::Idle) {
+        return;
+    }
+
+    if (m_balance < m_currentBet) {
+        m_autoPlayEnabled = false;
+        return;
+    }
+
+    if (m_autoPlayClock.getElapsedTime().asSeconds() >= m_autoPlayDelaySeconds) {
+        spin();
+    }
 }
 
 std::vector<std::vector<bool>> Engine::buildWinningCellHighlights(const std::vector<WinLine>& wins) {
@@ -171,7 +216,7 @@ std::vector<std::vector<bool>> Engine::buildWinningCellHighlights(const std::vec
 }
 
 void Engine::increaseBet() {
-    if (m_state == GameState::Spinning) {
+    if (m_state == GameState::Spinning || m_autoPlayEnabled) {
         return;
     }
 
@@ -185,7 +230,7 @@ void Engine::increaseBet() {
 }
 
 void Engine::decreaseBet() {
-    if (m_state == GameState::Spinning) {
+    if (m_state == GameState::Spinning || m_autoPlayEnabled) {
         return;
     }
 

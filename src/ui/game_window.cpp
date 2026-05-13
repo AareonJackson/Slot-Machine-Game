@@ -78,6 +78,14 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         "BET +"
     );
 
+    m_autoPlayButton = std::make_unique<Button>(
+        btnX,
+        betButtonY,
+        smallBtnWidth,
+        smallBtnHeight,
+        "AUTO"
+    );
+
     m_helpButton = std::make_unique<Button>(
         static_cast<float>(width) - 150.0f,
         static_cast<float>(height) - 70.0f,
@@ -117,6 +125,12 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         }
     });
 
+    m_autoPlayButton->setOnClick([this]() {
+        if (m_autoPlayCallback) {
+            m_autoPlayCallback();
+        }
+    });
+
     m_helpButton->setOnClick([this]() {
         m_showPaytable = !m_showPaytable;
     });
@@ -153,6 +167,10 @@ void GameWindow::pollEvents() {
             m_betUpButton->handleEvent(event, m_window);
         }
 
+        if (m_autoPlayButton) {
+            m_autoPlayButton->handleEvent(event, m_window);
+        }
+
         if (m_helpButton) {
             m_helpButton->handleEvent(event, m_window);
         }
@@ -169,6 +187,10 @@ void GameWindow::pollEvents() {
 
     if (m_betUpButton) {
         m_betUpButton->update(sf::Mouse::getPosition(m_window));
+    }
+
+    if (m_autoPlayButton) {
+        m_autoPlayButton->update(sf::Mouse::getPosition(m_window));
     }
 
     if (m_helpButton) {
@@ -200,6 +222,10 @@ void GameWindow::render() {
 
     if (m_betUpButton) {
         m_betUpButton->draw(m_window);
+    }
+
+    if (m_autoPlayButton) {
+        m_autoPlayButton->draw(m_window);
     }
 
     if (m_helpButton) {
@@ -274,6 +300,10 @@ void GameWindow::setBetUpCallback(std::function<void()> callback) {
 
 void GameWindow::setBetDownCallback(std::function<void()> callback) {
     m_betDownCallback = std::move(callback);
+}
+
+void GameWindow::setAutoPlayCallback(std::function<void()> callback) {
+    m_autoPlayCallback = std::move(callback);
 }
 
 sf::RenderWindow& GameWindow::getWindow() {
