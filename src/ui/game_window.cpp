@@ -42,6 +42,12 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
     m_lastWinText.setFillColor(sf::Color::Yellow);
     m_lastWinText.setPosition(520.0f, 15.0f);
 
+    m_freeSpinsText.setFont(m_font);
+    m_freeSpinsText.setCharacterSize(24);
+    m_freeSpinsText.setFillColor(sf::Color(255, 215, 0));
+    m_freeSpinsText.setPosition(30.0f, 45.0f);
+    m_freeSpinsText.setString("");
+
     m_statsText.setFont(m_font);
     m_statsText.setCharacterSize(18);
     m_statsText.setFillColor(sf::Color::White);
@@ -211,6 +217,7 @@ void GameWindow::render() {
     m_window.draw(m_betText);
     m_window.draw(m_lastWinText);
     m_window.draw(m_statsText);
+    m_window.draw(m_freeSpinsText);
 
     if (m_spinButton) {
         m_spinButton->draw(m_window);
@@ -284,6 +291,16 @@ void GameWindow::updateStatsText(int totalSpins, double totalWagered, double tot
                 << " |  Net: $" << net
                 << " |  Best: $" << biggestWin;
     m_statsText.setString(statsStream.str());
+}
+
+void GameWindow::updateFreeSpinsText(int freeSpinsRemaining) {
+    if (freeSpinsRemaining > 0) {
+        std::ostringstream stream;
+    stream << "FREE SPINS: " << freeSpinsRemaining;
+    m_freeSpinsText.setString(stream.str());
+    } else {
+        m_freeSpinsText.setString("");
+    }
 }
 
 void GameWindow::updatePaytableText(const std::string& paytableText) {

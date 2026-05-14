@@ -18,6 +18,7 @@ public:
     void updateReels(const std::vector<std::vector<std::string>>& symbols);
     void updateStatusText(double balance, double currentBet, double lastWin);
     void updateStatsText(int totalSpins, double totalWagered, double totalWon, double biggestWin);
+    void updateFreeSpinsText(int freeSpinsRemaining);
     void updatePaytableText(const std::string& paytableText);
     void setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells);
     void clearHighlightedCells();
@@ -45,6 +46,7 @@ private:
     sf::Text m_betText;
     sf::Text m_lastWinText;
     sf::Text m_statsText;
+    sf::Text m_freeSpinsText;
     sf::Text m_paytableText;
     sf::RectangleShape m_paytableOverlay;
 

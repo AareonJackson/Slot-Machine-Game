@@ -27,6 +27,7 @@ Engine::Engine() {
 
     refreshStatusText();
     refreshStatsText();
+    refreshFreeSpinsText();
     m_window->updatePaytableText(buildPaytableText());
 
     m_window->setSpinCallback([this]() {
@@ -65,6 +66,7 @@ void Engine::update() {
         }
     }
 
+    startNextFreeSpinIfNeeded();
     updateAutoPlay();
 }
 
@@ -78,15 +80,25 @@ bool Engine::canStartSpin() const {
 }
 
 void Engine::spin() {
-    if (!canStartSpin()) {
-        if (m_balance < m_currentBet) {
-            m_autoPlayEnabled = false;
-            DEBUG_LOG("Not enough money to spin! Balance: $" << m_balance);
-        }
+    if (m_state == GameState::Spinning) {
         return;
     }
 
-    m_balance -= m_currentBet;
+    const bool freeSpin = isFreeSpinActive();
+    m_currentSpinIsFree = freeSpin;
+
+    if (!freeSpin && m_balance < m_currentBet) {
+        std::cout << "Not enough money to spin! Balance: $" << m_balance << std::endl;
+        return;
+    }
+
+    if (freeSpin) {
+        m_freeSpinsRemaining--;
+        refreshFreeSpinsText();
+    } else {
+        m_balance -= m_currentBet;
+    }
+
     m_lastWin = 0.0;
     refreshStatusText();
     m_window->clearHighlightedCells();
@@ -98,8 +110,9 @@ void Engine::spin() {
 
     m_soundManager.playSound("spin");
 
-    DEBUG_LOG("Spin started. Bet: $" << m_currentBet
-              << ", Balance: $" << m_balance);
+    std::cout << "Spin started. Bet: $" << m_currentBet
+              << ", Balance: $" << m_balance
+              << ", Free spin: " << (freeSpin ? "YES" : "NO") << std::endl;
 }
 
 void Engine::finishSpin() {
@@ -121,11 +134,23 @@ void Engine::finishSpin() {
     m_state = GameState::Idle;
 
     m_totalSpins++;
-    m_totalWagered += m_currentBet;
+
+    if (!m_currentSpinIsFree) {
+        m_totalWagered += m_currentBet;
+    }
+
     m_totalWon += totalWin;
 
     if (totalWin > m_biggestWin) {
         m_biggestWin = totalWin;
+    }
+
+    if (checkFreeSpinTrigger(m_pendingSpinGrid)) {
+        m_freeSpinsRemaining += m_freeSpinsAwardAmount;
+        std:: cout << "Bonus triggered! Awarded "
+                << m_freeSpinsAwardAmount
+                << " free spins" << std::endl;
+        refreshFreeSpinsText();
     }
 
     if (totalWin > 0.0) {
@@ -137,6 +162,11 @@ void Engine::finishSpin() {
 
     refreshStatusText();
     refreshStatsText();
+    refreshFreeSpinsText();
+
+    if (m_freeSpinsRemaining > 0) {
+        m_freeSpinDelayClock.restart();
+    }
 
     if (m_autoPlayEnabled) {
         m_autoPlayClock.restart();
@@ -216,7 +246,7 @@ std::vector<std::vector<bool>> Engine::buildWinningCellHighlights(const std::vec
 }
 
 void Engine::increaseBet() {
-    if (m_state == GameState::Spinning || m_autoPlayEnabled) {
+    if (m_state == GameState::Spinning || isFreeSpinActive() || m_autoPlayEnabled) {
         return;
     }
 
@@ -230,7 +260,7 @@ void Engine::increaseBet() {
 }
 
 void Engine::decreaseBet() {
-    if (m_state == GameState::Spinning || m_autoPlayEnabled) {
+    if (m_state == GameState::Spinning || isFreeSpinActive() || m_autoPlayEnabled) {
         return;
     }
 
@@ -252,6 +282,43 @@ void Engine::refreshStatusText() {
 void Engine::refreshStatsText() {
     if (m_window) {
         m_window->updateStatsText(m_totalSpins, m_totalWagered, m_totalWon, m_biggestWin);
+    }
+}
+
+void Engine::refreshFreeSpinsText() {
+    if (m_window) {
+        m_window->updateFreeSpinsText(m_freeSpinsRemaining);
+    }
+}
+
+bool Engine::isFreeSpinActive() const {
+    return m_freeSpinsRemaining > 0;
+}
+
+bool Engine::checkFreeSpinTrigger(const std::vector<std::vector<std::string>>& grid) const {
+    int triggerCount = 0;
+
+    for (const auto& reel : grid) {
+        for (const auto& symbol : reel) {
+            if (symbol == m_freeSpinTriggerSymbol) {
+                triggerCount++;
+            }
+        }
+    }
+    return triggerCount >= m_freeSpinTriggerCount;
+}
+
+void Engine::startNextFreeSpinIfNeeded() {
+    if (m_state != GameState::Idle) {
+        return;
+    }
+
+    if (m_freeSpinsRemaining <= 0) {
+        return;
+    }
+
+    if (m_freeSpinDelayClock.getElapsedTime().asSeconds() >= m_freeSpinDelaySeconds) {
+        spin();
     }
 }
 
@@ -277,6 +344,12 @@ std::string Engine::buildPaytableText() const {
     stream << "BET + : Increase bet\n";
     stream << "BET - : Decrease bet\n";
     stream << "HELP : Show/hide this screen\n";
+
+    stream << "\nBONUS FEATURE:\n";
+    stream << "Land " << m_freeSpinTriggerCount << " or more "
+           << m_freeSpinTriggerSymbol << " symbols anywhere to win "
+           << m_freeSpinsAwardAmount << " free spins.\n";
+    stream << "Free spins do not cost balance but still pay using your current bet.\n";
 
     return stream.str();
 }

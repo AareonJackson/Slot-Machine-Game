@@ -33,6 +33,10 @@ private:
     void decreaseBet();
     void refreshStatusText();
     void refreshStatsText();
+    void refreshFreeSpinsText();
+    bool isFreeSpinActive() const;
+    bool checkFreeSpinTrigger(const std::vector<std::vector<std::string>>& grid) const;
+    void startNextFreeSpinIfNeeded();
     std::string buildPaytableText() const;
     std::vector<std::vector<std::string>> generateSpinGrid();
     std::vector<std::vector<std::string>> generateRandomDisplayGrid();
@@ -63,6 +67,13 @@ private:
     double m_totalWon = 0.0;
     double m_biggestWin = 0.0;
 
+    int m_freeSpinsRemaining = 0;
+    int m_freeSpinsAwardAmount = 5;
+    std::string m_freeSpinTriggerSymbol = "BELL";
+    int m_freeSpinTriggerCount = 3;
+    bool m_currentSpinIsFree = false;
+    sf::Clock m_freeSpinDelayClock;
+    float m_freeSpinDelaySeconds = 0.9f;
     bool m_autoPlayEnabled = false;
     float m_autoPlayDelaySeconds = 0.75f;
 };
