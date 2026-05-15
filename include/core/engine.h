@@ -3,6 +3,7 @@
 #include "core/rng.h"
 #include "core/payout.h"
 #include "audio/sound_manager.h"
+#include "config/save_manager.h"
 #include <SFML/System/Clock.hpp>
 #include <memory>
 #include <vector>
@@ -34,6 +35,8 @@ private:
     void refreshStatusText();
     void refreshStatsText();
     void refreshFreeSpinsText();
+    void loadPlayerSave();
+    void savePlayerSave() const;
     bool isFreeSpinActive() const;
     bool checkFreeSpinTrigger(const std::vector<std::vector<std::string>>& grid) const;
     void startNextFreeSpinIfNeeded();
@@ -48,6 +51,9 @@ private:
     RNG m_rng;
     PayoutCalculator m_payoutCalculator;
     SoundManager m_soundManager;
+    SaveManager m_saveManager;
+
+    const std::string m_saveFilePath = "save/player_stats.json";
 
     GameState m_state = GameState::Idle;
     sf::Clock m_spinClock;

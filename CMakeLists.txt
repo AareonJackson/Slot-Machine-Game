@@ -98,6 +98,7 @@ set(SOURCES
         src/ui/reel_view.cpp
         src/audio/sound_manager.cpp
         src/config/config_manager.cpp
+        src/config/save_manager.cpp
 )
 
 # Define header files
@@ -110,6 +111,8 @@ set(HEADERS
         include/ui/reel_view.h
         include/audio/sound_manager.h
         include/config/config_manager.h
+        include/config/save_manager.h
+        include/config/save_data.h
 )
 
 # Main executable

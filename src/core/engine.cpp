@@ -25,6 +25,8 @@ Engine::Engine() {
     m_soundManager.loadSound("win", "assets/audio/win.wav");
     m_soundManager.setVolume(70.0f);
 
+    loadPlayerSave();
+
     refreshStatusText();
     refreshStatsText();
     refreshFreeSpinsText();
@@ -47,7 +49,9 @@ Engine::Engine() {
     });
 }
 
-Engine::~Engine() = default;
+Engine::~Engine() {
+    savePlayerSave();
+}
 
 void Engine::run() {
     while (m_window->isOpen()) {
@@ -163,6 +167,8 @@ void Engine::finishSpin() {
     refreshStatusText();
     refreshStatsText();
     refreshFreeSpinsText();
+
+    savePlayerSave();
 
     if (m_freeSpinsRemaining > 0) {
         m_freeSpinDelayClock.restart();
@@ -283,6 +289,29 @@ void Engine::refreshStatsText() {
     if (m_window) {
         m_window->updateStatsText(m_totalSpins, m_totalWagered, m_totalWon, m_biggestWin);
     }
+}
+
+void Engine::loadPlayerSave() {
+    SaveData saveData;
+
+    if (m_saveManager.load(m_saveFilePath, saveData)) {
+        m_balance = saveData.balance;
+        m_totalSpins = saveData.totalSpins;
+        m_totalWagered = saveData.totalWagered;
+        m_totalWon = saveData.totalWon;
+        m_biggestWin = saveData.biggestWin;
+    }
+}
+
+void Engine::savePlayerSave() const {
+    SaveData saveData;
+    saveData.balance = m_balance;
+    saveData.totalSpins = m_totalSpins;
+    saveData.totalWagered = m_totalWagered;
+    saveData.totalWon = m_totalWon;
+    saveData.biggestWin = m_biggestWin;
+
+    m_saveManager.save(m_saveFilePath, saveData);
 }
 
 void Engine::refreshFreeSpinsText() {
