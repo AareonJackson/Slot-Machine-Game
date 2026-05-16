@@ -149,7 +149,7 @@ void Engine::finishSpin() {
         m_biggestWin = totalWin;
     }
 
-    if (checkFreeSpinTrigger(m_pendingSpinGrid)) {
+    if (!m_freeSpinsRemaining && checkFreeSpinTrigger(wins)) {
         m_freeSpinsRemaining += m_freeSpinsAwardAmount;
         std:: cout << "Bonus triggered! Awarded "
                 << m_freeSpinsAwardAmount
@@ -324,17 +324,14 @@ bool Engine::isFreeSpinActive() const {
     return m_freeSpinsRemaining > 0;
 }
 
-bool Engine::checkFreeSpinTrigger(const std::vector<std::vector<std::string>>& grid) const {
-    int triggerCount = 0;
-
-    for (const auto& reel : grid) {
-        for (const auto& symbol : reel) {
-            if (symbol == m_freeSpinTriggerSymbol) {
-                triggerCount++;
-            }
+bool Engine::checkFreeSpinTrigger(const std::vector<WinLine>& wins) const {
+    for (const auto& win : wins) {
+        if (win.symbol == m_freeSpinTriggerSymbol && win.match_count >= m_freeSpinTriggerCount) {
+            return true;
         }
     }
-    return triggerCount >= m_freeSpinTriggerCount;
+
+    return false;
 }
 
 void Engine::startNextFreeSpinIfNeeded() {
@@ -376,9 +373,10 @@ std::string Engine::buildPaytableText() const {
 
     stream << "\nBONUS FEATURE:\n";
     stream << "Land " << m_freeSpinTriggerCount << " or more "
-           << m_freeSpinTriggerSymbol << " symbols anywhere to win "
+           << m_freeSpinTriggerSymbol << " symbols on a winning payline to win "
            << m_freeSpinsAwardAmount << " free spins.\n";
     stream << "Free spins do not cost balance but still pay using your current bet.\n";
+    stream << "Free spins do not retrigger additional free spins in this version.\n";
 
     return stream.str();
 }

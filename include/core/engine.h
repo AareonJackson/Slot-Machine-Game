@@ -38,7 +38,7 @@ private:
     void loadPlayerSave();
     void savePlayerSave() const;
     bool isFreeSpinActive() const;
-    bool checkFreeSpinTrigger(const std::vector<std::vector<std::string>>& grid) const;
+    bool checkFreeSpinTrigger(const std::vector<WinLine>& wins) const;
     void startNextFreeSpinIfNeeded();
     std::string buildPaytableText() const;
     std::vector<std::vector<std::string>> generateSpinGrid();
