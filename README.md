@@ -9,7 +9,8 @@ The game will deliver an authentic casino experience with realistic mechanics, e
 
 Recent Screenshot:
 
-<img width="640" height="354" alt="SlotMachine-Screenshot6" src="https://github.com/user-attachments/assets/1faafa0a-1b9b-41cb-a187-c9bcfb36ab86" />
+<img width="640" height="354" alt="SlotMachine-Screenshot7" src="https://github.com/user-attachments/assets/efd92f1d-300c-4570-9716-38bb68bbb8f0" />
+
 
 ## Features
 
