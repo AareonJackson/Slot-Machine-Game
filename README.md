@@ -1,4 +1,5 @@
 
+
 # Las Vegas Style Slot Machine Game
 
 ## Project Overview
@@ -8,8 +9,7 @@ The game will deliver an authentic casino experience with realistic mechanics, e
 
 Recent Screenshot:
 
-<img width="640" height="354" alt="SlotMachine-Screenshot5" src="https://github.com/user-attachments/assets/31bd9d49-1b9b-4ef7-b85f-7ff3e5bd0408" />
-
+<img width="640" height="354" alt="SlotMachine-Screenshot6" src="https://github.com/user-attachments/assets/1faafa0a-1b9b-41cb-a187-c9bcfb36ab86" />
 
 ## Features
 
