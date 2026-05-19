@@ -30,6 +30,7 @@ private:
     void toggleAutoPlay();
     void updateAutoPlay();
     bool canStartSpin() const;
+    void resetProgress();
     void increaseBet();
     void decreaseBet();
     void refreshStatusText();
@@ -67,6 +68,9 @@ private:
     double m_minBet = 1.0;
     double m_maxBet = 100.0;
     double m_betStep = 5.0;
+
+    const double m_defaultBalance = 1000.0;
+    const double m_defaultBet = 10.0;
 
     int m_totalSpins = 0;
     double m_totalWagered = 0.0;

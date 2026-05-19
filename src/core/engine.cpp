@@ -47,6 +47,10 @@ Engine::Engine() {
     m_window->setAutoPlayCallback([this]() {
         toggleAutoPlay();
     });
+
+    m_window->setResetCallback([this]() {
+        resetProgress();
+    });
 }
 
 Engine::~Engine() {
@@ -81,6 +85,38 @@ void Engine::render() {
 
 bool Engine::canStartSpin() const {
     return m_state == GameState::Idle && m_balance >= m_currentBet;
+}
+
+void Engine::resetProgress() {
+    if (m_state == GameState::Spinning) {
+        return;
+    }
+
+    m_autoPlayEnabled = false;
+    m_freeSpinsRemaining = 0;
+    m_currentSpinIsFree = false;
+
+    m_balance = m_defaultBalance;
+    m_currentBet = m_defaultBet;
+    m_lastWin = 0.0;
+
+    m_totalSpins = 0;
+    m_totalWagered = 0.0;
+    m_totalWon = 0.0;
+    m_biggestWin = 0.0;
+
+    if (m_window) {
+        m_window->clearHighlightedCells();
+        m_window->updateReels(generateRandomDisplayGrid());
+    }
+
+    refreshStatusText();
+    refreshStatsText();
+    refreshFreeSpinsText();
+
+    savePlayerSave();
+
+    std::cout << "Progress reset." << std::endl;
 }
 
 void Engine::spin() {

@@ -100,6 +100,14 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
         "HELP"
     );
 
+    m_resetButton = std::make_unique<Button>(
+        static_cast<float>(width) - 290.0f,
+        static_cast<float>(height) - 70.0f,
+        120.0f,
+        50.0f,
+        "RESET"
+    );
+
     m_paytableOverlay.setPosition(100.0f, 80.0f);
     m_paytableOverlay.setSize(sf::Vector2f(static_cast<float>(width) - 200.0f, static_cast<float>(height) - 160.0f));
     m_paytableOverlay.setFillColor(sf::Color(0, 0, 0, 220));
@@ -139,6 +147,12 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
 
     m_helpButton->setOnClick([this]() {
         m_showPaytable = !m_showPaytable;
+    });
+
+    m_resetButton->setOnClick([this]() {
+       if (m_resetCallback) {
+            m_resetCallback();
+        }
     });
 }
 
@@ -180,6 +194,10 @@ void GameWindow::pollEvents() {
         if (m_helpButton) {
             m_helpButton->handleEvent(event, m_window);
         }
+
+        if (m_resetButton) {
+            m_resetButton->handleEvent(event, m_window);
+        }
     }
 
     // Update UI components
@@ -201,6 +219,10 @@ void GameWindow::pollEvents() {
 
     if (m_helpButton) {
         m_helpButton->update(sf::Mouse::getPosition(m_window));
+    }
+
+    if (m_resetButton) {
+        m_resetButton->update(sf::Mouse::getPosition(m_window));
     }
 }
 
@@ -237,6 +259,10 @@ void GameWindow::render() {
 
     if (m_helpButton) {
         m_helpButton->draw(m_window);
+    }
+
+    if (m_resetButton) {
+        m_resetButton->draw(m_window);
     }
 
     if (m_showPaytable) {
@@ -321,6 +347,10 @@ void GameWindow::setBetDownCallback(std::function<void()> callback) {
 
 void GameWindow::setAutoPlayCallback(std::function<void()> callback) {
     m_autoPlayCallback = std::move(callback);
+}
+
+void GameWindow::setResetCallback(std::function<void()> callback) {
+    m_resetCallback = std::move(callback);
 }
 
 sf::RenderWindow& GameWindow::getWindow() {

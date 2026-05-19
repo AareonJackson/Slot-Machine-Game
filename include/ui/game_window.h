@@ -26,6 +26,7 @@ public:
     void setBetUpCallback(std::function<void()> callback);
     void setBetDownCallback(std::function<void()> callback);
     void setAutoPlayCallback(std::function<void()> callback);
+    void setResetCallback(std::function<void()> callback);
 
     // Getter just in case I want to pass the window to other UI components later
     sf::RenderWindow& getWindow();
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<Button> m_betDownButton;
     std::unique_ptr<Button> m_helpButton;
     std::unique_ptr<Button> m_autoPlayButton;
+    std::unique_ptr<Button> m_resetButton;
 
     sf::Font m_font;
     sf::Text m_balanceText;
@@ -56,4 +58,5 @@ private:
     std::function<void()> m_betUpCallback;
     std::function<void()> m_betDownCallback;
     std::function<void()> m_autoPlayCallback;
+    std::function<void()> m_resetCallback;
 };
