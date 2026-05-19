@@ -30,6 +30,7 @@ Engine::Engine() {
     refreshStatusText();
     refreshStatsText();
     refreshFreeSpinsText();
+    refreshModeText();
     m_window->updatePaytableText(buildPaytableText());
 
     m_window->setSpinCallback([this]() {
@@ -113,6 +114,7 @@ void Engine::resetProgress() {
     refreshStatusText();
     refreshStatsText();
     refreshFreeSpinsText();
+    refreshModeText();
 
     savePlayerSave();
 
@@ -147,6 +149,8 @@ void Engine::spin() {
     m_loggedStoppedReels.assign(m_pendingSpinGrid.size(), false);
     m_state = GameState::Spinning;
     m_spinClock.restart();
+
+    refreshModeText();
 
     m_soundManager.playSound("spin");
 
@@ -203,6 +207,7 @@ void Engine::finishSpin() {
     refreshStatusText();
     refreshStatsText();
     refreshFreeSpinsText();
+    refreshModeText();
 
     savePlayerSave();
 
@@ -226,6 +231,9 @@ void Engine::animateSpin() {
 
 void Engine::toggleAutoPlay() {
     m_autoPlayEnabled = !m_autoPlayEnabled;
+
+    refreshModeText();
+
     if (m_autoPlayEnabled) {
         if (!canStartSpin()) {
             m_autoPlayEnabled = false;
@@ -248,6 +256,7 @@ void Engine::updateAutoPlay() {
 
     if (m_balance < m_currentBet) {
         m_autoPlayEnabled = false;
+        refreshModeText();
         return;
     }
 
@@ -354,6 +363,36 @@ void Engine::refreshFreeSpinsText() {
     if (m_window) {
         m_window->updateFreeSpinsText(m_freeSpinsRemaining);
     }
+}
+
+void Engine::refreshModeText() {
+    if (m_window) {
+        m_window->updateModeText(getCurrentModeText());
+    }
+}
+
+std::string Engine::getCurrentModeText() const {
+    if (m_state == GameState::Spinning) {
+        if (m_currentSpinIsFree) {
+            return "Free Spin";
+        }
+
+        if (m_autoPlayEnabled) {
+            return "Autoplay Spinning";
+        }
+
+        return "Spinning";
+    }
+
+    if (m_freeSpinsRemaining > 0) {
+        return "Free Spins";
+    }
+
+    if (m_autoPlayEnabled) {
+        return "Autoplay";
+    }
+
+    return "Manual";
 }
 
 bool Engine::isFreeSpinActive() const {

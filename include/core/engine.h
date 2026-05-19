@@ -36,6 +36,8 @@ private:
     void refreshStatusText();
     void refreshStatsText();
     void refreshFreeSpinsText();
+    void refreshModeText();
+    std::string getCurrentModeText() const;
     void loadPlayerSave();
     void savePlayerSave() const;
     bool isFreeSpinActive() const;

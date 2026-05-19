@@ -48,6 +48,12 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
     m_freeSpinsText.setPosition(30.0f, 45.0f);
     m_freeSpinsText.setString("");
 
+    m_modeText.setFont(m_font);
+    m_modeText.setCharacterSize(22);
+    m_modeText.setFillColor(sf::Color::Cyan);
+    m_modeText.setPosition(700.0f, 15.0f);
+    m_modeText.setString("Mode: Manual");
+
     m_statsText.setFont(m_font);
     m_statsText.setCharacterSize(18);
     m_statsText.setFillColor(sf::Color::White);
@@ -55,6 +61,8 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
 
     updateStatusText(1000.0, 10.0, 0.0);
     updateStatsText(0, 0.0, 0.0, 0.0);
+    updateFreeSpinsText(0);
+    updateModeText("Manual");
 
     // Spin button setup
     float btnWidth = 200.0f;
@@ -240,6 +248,7 @@ void GameWindow::render() {
     m_window.draw(m_lastWinText);
     m_window.draw(m_statsText);
     m_window.draw(m_freeSpinsText);
+    m_window.draw(m_modeText);
 
     if (m_spinButton) {
         m_spinButton->draw(m_window);
@@ -327,6 +336,10 @@ void GameWindow::updateFreeSpinsText(int freeSpinsRemaining) {
     } else {
         m_freeSpinsText.setString("");
     }
+}
+
+void GameWindow::updateModeText(const std::string& modeText) {
+    m_modeText.setString("Mode: " + modeText);
 }
 
 void GameWindow::updatePaytableText(const std::string& paytableText) {
