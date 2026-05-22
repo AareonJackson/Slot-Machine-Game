@@ -54,6 +54,23 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
     m_modeText.setPosition(700.0f, 15.0f);
     m_modeText.setString("Mode: Manual");
 
+    m_winMessageText.setFont(m_font);
+    m_winMessageText.setCharacterSize(36);
+    m_winMessageText.setFillColor(sf::Color(255, 215, 0));
+    m_winMessageText.setStyle(sf::Text::Bold);
+    m_winMessageText.setString("");
+
+    float winMessageWidth = 420.0f;
+    float winMessageHeight = 90.0f;
+    m_winMessageBackground.setSize(sf::Vector2f(winMessageWidth, winMessageHeight));
+    m_winMessageBackground.setPosition(
+      (static_cast<float>(width) - winMessageWidth) / 2.0f,
+      (static_cast<float>(height) - winMessageHeight) / 2.0f
+    );
+    m_winMessageBackground.setFillColor(sf::Color(0, 0, 0, 190));
+    m_winMessageBackground.setOutlineColor(sf::Color(255, 215, 0));
+    m_winMessageBackground.setOutlineThickness(3.0f);
+
     m_statsText.setFont(m_font);
     m_statsText.setCharacterSize(18);
     m_statsText.setFillColor(sf::Color::White);
@@ -274,6 +291,11 @@ void GameWindow::render() {
         m_resetButton->draw(m_window);
     }
 
+    if (m_showWinMessage) {
+        m_window.draw(m_winMessageBackground);
+        m_window.draw(m_winMessageText);
+    }
+
     if (m_showPaytable) {
         m_window.draw(m_paytableOverlay);
         m_window.draw(m_paytableText);
@@ -344,6 +366,29 @@ void GameWindow::updateModeText(const std::string& modeText) {
 
 void GameWindow::updatePaytableText(const std::string& paytableText) {
     m_paytableText.setString(paytableText);
+}
+
+void GameWindow::showWinMessage(const std::string& message) {
+    m_winMessageText.setString(message);
+
+    sf::FloatRect textBounds = m_winMessageText.getLocalBounds();
+    m_winMessageText.setOrigin(
+        textBounds.left + textBounds.width / 2.0f,
+        textBounds.top + textBounds.height / 2.0f
+    );
+
+    sf::FloatRect backgroundBounds = m_winMessageBackground.getGlobalBounds();
+    m_winMessageText.setPosition(
+        backgroundBounds.left + backgroundBounds.width / 2.0f,
+        backgroundBounds.top + backgroundBounds.height / 2.0f
+    );
+
+    m_showWinMessage = true;
+}
+
+void GameWindow::clearWinMessage() {
+    m_winMessageText.setString("");
+    m_showWinMessage = false;
 }
 
 void GameWindow::setSpinCallback(std::function<void()> callback) {

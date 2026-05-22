@@ -3,6 +3,7 @@
 #include "core/debug_log.h"
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 Engine::Engine() {
     auto& config = ConfigManager::getInstance();
@@ -108,7 +109,8 @@ void Engine::resetProgress() {
 
     if (m_window) {
         m_window->clearHighlightedCells();
-        m_window->updateReels(generateRandomDisplayGrid());
+        m_window->clearWinMessage();
+        // updateReels(generateRandomDisplayGrid());
     }
 
     refreshStatusText();
@@ -144,6 +146,7 @@ void Engine::spin() {
     m_lastWin = 0.0;
     refreshStatusText();
     m_window->clearHighlightedCells();
+    m_window->clearWinMessage();
 
     m_pendingSpinGrid = generateSpinGrid();
     m_loggedStoppedReels.assign(m_pendingSpinGrid.size(), false);
@@ -199,6 +202,7 @@ void Engine::finishSpin() {
 
     if (totalWin > 0.0) {
         m_soundManager.playSound("win");
+        m_window->showWinMessage(buildWinMessage(totalWin));
     }
 
     std::vector<std::vector<bool>> highlightedCells = buildWinningCellHighlights(wins);
@@ -393,6 +397,28 @@ std::string Engine::getCurrentModeText() const {
     }
 
     return "Manual";
+}
+
+std::string Engine::buildWinMessage(double totalWin) const {
+    std::ostringstream stream;
+
+    double winMultiplier = 0.0;
+    if (m_currentBet > 0.0) {
+        winMultiplier = totalWin / m_currentBet;
+    }
+    if (winMultiplier >= 100.0) {
+        stream << "JACKPOT!";
+    } else if (winMultiplier >= 20.0) {
+        stream << "HUGE WIN!";
+    } else if (winMultiplier >= 5.0) {
+        stream << "BIG WIN!";
+    } else {
+        stream << "WIN!";
+    }
+
+    stream << " $" << std::fixed << std::setprecision(2) << totalWin;
+
+    return stream.str();
 }
 
 bool Engine::isFreeSpinActive() const {

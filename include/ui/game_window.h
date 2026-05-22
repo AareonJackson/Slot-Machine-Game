@@ -21,6 +21,8 @@ public:
     void updateFreeSpinsText(int freeSpinsRemaining);
     void updateModeText(const std::string& modeText);
     void updatePaytableText(const std::string& paytableText);
+    void showWinMessage(const std::string& message);
+    void clearWinMessage();
     void setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells);
     void clearHighlightedCells();
     void setSpinCallback(std::function<void()> callback);
@@ -51,9 +53,12 @@ private:
     sf::Text m_statsText;
     sf::Text m_freeSpinsText;
     sf::Text m_modeText;
+    sf::Text m_winMessageText;
+    sf::RectangleShape m_winMessageBackground;
     sf::Text m_paytableText;
     sf::RectangleShape m_paytableOverlay;
 
+    bool m_showWinMessage = false;
     bool m_showPaytable = false;
 
     std::function<void()> m_spinCallback;

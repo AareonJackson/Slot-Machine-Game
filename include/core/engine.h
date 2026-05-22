@@ -38,6 +38,7 @@ private:
     void refreshFreeSpinsText();
     void refreshModeText();
     std::string getCurrentModeText() const;
+    std::string buildWinMessage(double totalWin) const;
     void loadPlayerSave();
     void savePlayerSave() const;
     bool isFreeSpinActive() const;
