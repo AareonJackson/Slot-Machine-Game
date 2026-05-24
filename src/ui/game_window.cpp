@@ -172,6 +172,7 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
 
     m_helpButton->setOnClick([this]() {
         m_showPaytable = !m_showPaytable;
+        m_paytableScrollOffset = 0.0f;
     });
 
     m_resetButton->setOnClick([this]() {
@@ -197,6 +198,17 @@ void GameWindow::pollEvents() {
     while (m_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             m_window.close();
+        }
+        if (m_showPaytable && event.type == sf::Event::MouseWheelScrolled) {
+            m_paytableScrollOffset -= event.mouseWheelScroll.delta * m_paytableScrollSpeed;
+
+            if (m_paytableScrollOffset < 0.0f) {
+                m_paytableScrollOffset = 0.0f;
+            }
+
+            if (m_paytableScrollOffset > m_paytableMaxScrollOffset) {
+                m_paytableScrollOffset = m_paytableMaxScrollOffset;
+            }
         }
 
         // Pass events to UI components
@@ -298,7 +310,36 @@ void GameWindow::render() {
 
     if (m_showPaytable) {
         m_window.draw(m_paytableOverlay);
+        sf::View previousView = m_window.getView();
+
+        sf::FloatRect overlayBounds = m_paytableOverlay.getGlobalBounds();
+
+        float padding = 30.0f;
+        float contentLeft = overlayBounds.left + padding;
+        float contentTop = overlayBounds.top + padding;
+        float contentWidth = overlayBounds.width - padding * 2.0f;
+        float contentHeight = overlayBounds.height - padding * 2.0f;
+
+        sf::View paytableView;
+        paytableView.reset(sf::FloatRect(
+            contentLeft,
+            contentTop + m_paytableScrollOffset,
+            contentWidth,
+            contentHeight
+        ));
+
+        paytableView.setViewport(sf::FloatRect(
+            contentLeft / static_cast<float>(m_window.getSize().x),
+            contentTop / static_cast<float>(m_window.getSize().y),
+            contentWidth / static_cast<float>(m_window.getSize().x),
+            contentHeight / static_cast<float>(m_window.getSize().y)
+        ));
+
+        m_window.setView(paytableView);
+        m_paytableText.setPosition(contentLeft, contentTop);
         m_window.draw(m_paytableText);
+
+        m_window.setView(previousView);
     }
 
     // Display window
@@ -366,6 +407,23 @@ void GameWindow::updateModeText(const std::string& modeText) {
 
 void GameWindow::updatePaytableText(const std::string& paytableText) {
     m_paytableText.setString(paytableText);
+
+    sf::FloatRect overlayBounds = m_paytableOverlay.getGlobalBounds();
+    sf::FloatRect textBounds = m_paytableText.getLocalBounds();
+
+    float padding = 30.0f;
+    float visibleHeight = overlayBounds.height - padding * 2.0f;
+    float textHeight = textBounds.height;
+
+    m_paytableMaxScrollOffset = textHeight - visibleHeight;
+
+    if (m_paytableMaxScrollOffset < 0.0f) {
+        m_paytableMaxScrollOffset = 0.0f;
+    }
+
+    if (m_paytableScrollOffset > m_paytableMaxScrollOffset) {
+        m_paytableScrollOffset = m_paytableMaxScrollOffset;
+    }
 }
 
 void GameWindow::showWinMessage(const std::string& message) {

@@ -61,6 +61,10 @@ private:
     bool m_showWinMessage = false;
     bool m_showPaytable = false;
 
+    float m_paytableScrollOffset = 0.0f;
+    float m_paytableMaxScrollOffset = 0.0f;
+    float m_paytableScrollSpeed = 15.0f;
+
     std::function<void()> m_spinCallback;
     std::function<void()> m_betUpCallback;
     std::function<void()> m_betDownCallback;
