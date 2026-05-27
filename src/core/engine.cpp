@@ -11,7 +11,7 @@ Engine::Engine() {
     if (!config.loadAllConfigs("assets/config")) {
         std::cerr << "Failed to load configuration files. Using fallback window settings." << std::endl;
         // initialize the window from the game_config.json
-        m_window = std::make_unique<GameWindow>(800, 600, "The Slot Game");
+        m_window = std::make_unique<GameWindow>(1200, 720, "The Slot Game");
     } else {
         const auto& gameConfig = config.getGameConfig();
         m_window = std::make_unique<GameWindow>(
@@ -26,6 +26,7 @@ Engine::Engine() {
     m_soundManager.loadSound("win", "assets/audio/win.wav");
     m_soundManager.setVolume(70.0f);
 
+    applyGameConfig();
     loadPlayerSave();
 
     refreshStatusText();
@@ -59,6 +60,38 @@ Engine::~Engine() {
     savePlayerSave();
 }
 
+void Engine::applyGameConfig() {
+    const auto& gameConfig = ConfigManager::getInstance().getGameConfig();
+
+    m_defaultBalance = gameConfig.startingBalance;
+    m_defaultBet = gameConfig.defaultBet;
+
+    m_balance = gameConfig.startingBalance;
+    m_currentBet = gameConfig.defaultBet;
+    m_minBet = gameConfig.minBet;
+    m_maxBet = gameConfig.maxBet;
+    m_betStep = gameConfig.betStep;
+
+    m_spinDurationSeconds = gameConfig.spinDurationSeconds;
+    m_firstReelStopTime = gameConfig.firstReelStopTime;
+    m_delayBetweenReels = gameConfig.delayBetweenReels;
+
+    m_autoPlayDelaySeconds = gameConfig.autoplayDelaySeconds;
+
+    m_freeSpinTriggerSymbol = gameConfig.freeSpinTriggerSymbol;
+    m_freeSpinTriggerCount = gameConfig.freeSpinTriggerCount;
+    m_freeSpinsAwardAmount = gameConfig.freeSpinsAwarded;
+    m_freeSpinDelaySeconds = gameConfig.freeSpinDelaySeconds;
+
+    if (m_currentBet < m_minBet) {
+        m_currentBet = m_minBet;
+    }
+
+    if (m_currentBet > m_maxBet) {
+        m_currentBet = m_maxBet;
+    }
+}
+
 void Engine::run() {
     while (m_window->isOpen()) {
         m_window->pollEvents();
@@ -71,7 +104,7 @@ void Engine::update() {
     if (m_state == GameState::Spinning) {
         animateSpin();
 
-        if (m_spinClock.getElapsedTime().asSeconds() >= 3.2f) {
+        if (m_spinClock.getElapsedTime().asSeconds() >= m_spinDurationSeconds) {
             finishSpin();
         }
     }
@@ -540,14 +573,12 @@ std::vector<std::vector<std::string>> Engine::generateAnimatedDisplayGrid(float 
         std::vector<std::string>(reelsConfig.num_visible_rows)
     );
 
-    const float firstReelStopTime = 0.8f;
-    const float delayBetweenReels = 1.0f;
 
     for (int reel = 0; reel < reelsConfig.num_reels; ++reel) {
         const auto& reelStrip = reelsConfig.reel_strips[reel];
         int reelLength = static_cast<int>(reelStrip.size());
 
-        float reelStopTime = firstReelStopTime + static_cast<float>(reel) * delayBetweenReels;
+        float reelStopTime = m_firstReelStopTime + static_cast<float>(reel) * m_delayBetweenReels;
         bool reelHasStopped = elapsedSeconds >= reelStopTime;
 
         if (reelHasStopped &&

@@ -27,6 +27,7 @@ private:
     void spin();
     void finishSpin();
     void animateSpin();
+    void applyGameConfig();
     void toggleAutoPlay();
     void updateAutoPlay();
     bool canStartSpin() const;
@@ -72,8 +73,12 @@ private:
     double m_maxBet = 100.0;
     double m_betStep = 5.0;
 
-    const double m_defaultBalance = 1000.0;
-    const double m_defaultBet = 10.0;
+    double m_defaultBalance = 1000.0;
+    double m_defaultBet = 10.0;
+
+    float m_spinDurationSeconds = 3.2f;
+    float m_firstReelStopTime = 0.8f;
+    float m_delayBetweenReels = 1.0f;
 
     int m_totalSpins = 0;
     double m_totalWagered = 0.0;

@@ -1,5 +1,22 @@
 {
   "gameTitle": "The Slot Game",
-  "windowWidth": 1280,
-  "windowHeight": 720
+  "windowWidth": 1200,
+  "windowHeight": 720,
+
+  "startingBalance": 1000.0,
+  "defaultBet": 10.0,
+  "minBet": 1.0,
+  "maxBet": 100.0,
+  "betStep": 5.0,
+
+  "spinDurationSeconds": 3.2,
+  "firstReelStopTime": 0.8,
+  "delayBetweenReels": 1.0,
+
+  "autoplayDelaySeconds": 0.75,
+
+  "freeSpinTriggerSymbol": "BELL",
+  "freeSpinTriggerCount": 3,
+  "freeSpinsAwarded": 5,
+  "freeSpinDelaySeconds": 0.9
 }
