@@ -152,6 +152,28 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(BUILD_TESTS)
     enable_testing()
+
+    add_executable(SlotMachineTests
+            tests/test_main.cpp
+            tests/test_save_manager.cpp
+            tests/test_payout.cpp
+            src/config/save_manager.cpp
+            src/config/config_manager.cpp
+            src/core/payout.cpp
+    )
+
+    target_include_directories(SlotMachineTests
+            PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+
+    target_link_libraries(SlotMachineTests
+            PRIVATE
+            nlohmann_json::nlohmann_json
+    )
+
+    add_test(NAME SlotMachineTests COMMAND SlotMachineTests)
 endif()
 
 if(BUILD_DOCS)
