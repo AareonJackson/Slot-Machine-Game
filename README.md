@@ -4,8 +4,10 @@
 
 ## Project Overview
 
-This repository will contain a full-featured Las Vegas-style slot machine game built primarily with C++. 
-The game will deliver an authentic casino experience with realistic mechanics, engaging graphics, and immersive sound effects. (In-Progress)
+This is a C++ slot machine game inspired by classic Las Vegas-style slot machines.
+The project uses **C++17**, **CMake**, and **SFML** for graphics, window handling, and audio. Game data such as reels, paylines, and payouts are loaded from JSON configuration files.
+
+This project is still in progress.
 
 Recent Screenshot:
 
@@ -14,77 +16,108 @@ Recent Screenshot:
 
 ## Features
 
-- **Authentic Gameplay**: True-to-casino random number generation and payout algorithms
-- **Multiple Reel Configurations**: Support for 3, 5, and 7-reel gameplay with configurable pay lines
-- **Rich Bonus Features**: Free spins, multipliers, bonus games, and progressive jackpots
-- **High-Quality Graphics**: Smooth animations and eye-catching visual effects
-- **Immersive Audio**: Dynamic sound effects and background music
-- **Player Statistics**: Comprehensive tracking of play history and win statistics
-- **Configurable Settings**: Customizable bet sizes, autoplay, and game speed
+- **Slot Machine Gameplay**: Reel-based gameplay with configurable symbols, paylines, and payouts
+- **Configurable Game Data**: JSON-driven game, reel, payline, and paytable settings
+- **Bonus / Free Spins**: Free-spin trigger behavior based on configured symbols
+- **Player Save Data**: Balance and session statistics can be saved and loaded
+- **Custom UI**: SFML-based buttons, reels, and game window rendering
+- **Audio Support**: SFML audio integration
+- **Testing Support**: CMake test target for core logic and save/load behavior
 
 ## Technology Stack
 
-- **Core Development**: C++17/C++20
-- **Build System**: CMake
+- **Core Development**: C++17
+- **Build System**: CMake 3.15+
 - **Graphics**: SFML (Simple and Fast Multimedia Library)
-- **Audio**: OpenAL
+- **Audio**: SFML Audio / OpenAL Backend
 - **UI Components**: Custom C++ UI system
 - **Version Control**: Git/GitHub
-- **IDE**: CLion
-- **Testing**: Google Test Framework
+- **IDE**: CLion recommended, but not required
+- **Testing**: CMake / CTest with project executables
 
+---
 ## Getting Started
-
 ### Prerequisites
+Before building the project, make sure you have:
 
-- CMake 3.15+
-- C++17 compatible compiler (GCC 9+, Clang 10+, MSVC 19.20+)
-- Git
-- CLion IDE (recommended) or any C++ IDE
+- **CMake 3.15+**
+- **A C++17 compatible compiler**
+   - GCC 9+
+   - Clang 10+
+   - MSVC 19.20+
+- **Git**
+- **OpenAL**
+- **CLion IDE** recommended but not required
 
+SFML is used for graphics, window handling, and audio.
+The project can download/build SFML through CMake, but your system may still need OpenAL installed for audio support.
+---
 ### Installation (The project is still ongoing, so please be patient. A Development roadmap is provided further below.)
 
-1. Clone the repository:
+### 1. Clone the repository:
    ```bash
-   git clone https://https://github.com/AareonJackson/SlotMachineGame.git
-   cd Slot-Machine
+   git clone https://github.com/AareonJackson/SlotMachineGame.git
+   cd SlotMachineGame
    ```
 
-2. Initialize and update submodules:
+### 2. Configure the Project:
    ```bash
-   git submodule init
-   git submodule update
+   cmake -S . -B build
+   ```
+   Or if you have Ninja installed, you can use:
+   ```bash
+   cmake -S . -B build -G Ninja
    ```
 
-3. Generate build files with CMake:
+### 3. Build the Project:
    ```bash
-   mkdir build
-   cd build
-   cmake ..
+   cmake --build build
+   ```
+   For a release build:
+   ```bash
+   cmake --build build --config Release
    ```
 
-4. Build the project:
+### 4. Run the Game:
+
+   The executable is placed inside the build folder.
+### macOS / Linux
    ```bash
-   cmake --build . --config Release
+   ./build/bin/SlotMachine
+   ```
+### Windows
+
+If using Visual Studio-style builds:
+   ```bash
+   .\build\bin\SlotMachine.exe
+   ```
+   or:
+   ```bash
+   build\bin\Release\SlotMachine.exe
+   ```
+If using Ninja or Make:
+   ```bash
+   build\bin\SlotMachine.exe
    ```
 
-5. Run the executable:
-   ```bash
-   ./SlotMachine
-   ```
-
+---
 ### Using CLion
 
 1. Open CLion
-2. Select "Open" and navigate to the cloned project directory
-3. CLion will automatically detect the CMake configuration
-4. Click the build button or press Shift+F9 to build
-5. Click the run button or press Shift+F10 to run
+2. Select **Open**.
+3. Choose the cloned `SlotMachineGame` folder.
+4. Wait for CLion to load the CMake project.
+5. Click the **Build** button.
+6. Click the **Run** button.
+
+If CLion asks for a CMake profile, the default profile is usually fine.
+
+---
 
 ## Project Structure
 
 ```
-slot-machine/
+SlotMachineGame/
 ├── CMakeLists.txt                  # Main CMake configuration
 ├── assets/                         # Game assets
 │   ├── audio/                      # Sound effects and music
@@ -103,6 +136,7 @@ slot-machine/
 │   ├── config/                     # Configuration management
 │   └── main.cpp                    # Application entry point
 └── tests/                          # Test suite
+    ├── docs/                       # Test documentation
     ├── unit/                       # Unit tests
     └── integration/                # Integration tests
 ```
@@ -111,26 +145,22 @@ slot-machine/
 
 The game can be configured by editing the JSON files in the `assets/config/` directory:
 
-- `game_config.json`: General game settings
-- `reels_config.json`: Reel strips and symbol configurations
-- `paylines_config.json`: Payline definitions
-- `paytable_config.json`: Symbol payout values
-- `features_config.json`: Bonus features configuration
+Important configuration files include:
 
-Example configuration:
+- `game_config.json`
+- `reels_config.json`
+- `paylines_config.json`
+- `paytable_config.json`
 
-```json
-{
-    "game_name": "Lucky Vegas",
-    "reel_count": 5,
-    "row_count": 3,
-    "payline_count": 20,
-    "default_bet": 1.00,
-    "min_bet": 0.20,
-    "max_bet": 100.00,
-    "rtp_percentage": 96.5
-}
-```
+These files control things like:
+
+- Reel layout
+- Symbols
+- Paylines
+- Payout values
+- Bet settings
+
+---
 
 ## Development Roadmap
 
