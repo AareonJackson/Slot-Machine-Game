@@ -79,8 +79,9 @@ The project can download/build SFML through CMake, but your system may still nee
    ```
 
 ### 4. Run the Game:
+The game needs access to the `assets/` folder at runtime.
 
-   The executable is placed inside the build folder.
+The recommended way is to run the game from the project root after building.
 ### macOS / Linux
    ```bash
    ./build/bin/SlotMachine
