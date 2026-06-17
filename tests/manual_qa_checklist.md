@@ -1,40 +1,40 @@
 # Manual QA Checklist
 
 ## Before testing
-- [ ] Build succeeds.
-- [ ] Game launches.
-- [ ] No missing asset errors.
-- [ ] Save file state is known.
+- [x] Build succeeds.
+- [x] Game launches.
+- [x] No missing asset errors.
+- [x] Save file state is known.
 
 ## Core gameplay
-- [ ] Manual spin works.
-- [ ] Bet is deducted.
-- [ ] Reels stop one at a time.
-- [ ] Win highlights appear.
-- [ ] Win message appears.
-- [ ] Balance updates correctly.
+- [x] Manual spin works.
+- [x] Bet is deducted.
+- [x] Reels stop one at a time.
+- [x] Win highlights appear.
+- [x] Win message appears.
+- [x] Balance updates correctly.
 
 ## Buttons
-- [ ] SPIN works.
-- [ ] BET + works.
-- [ ] BET - works.
-- [ ] AUTO toggles autoplay.
-- [ ] HELP opens/closes.
-- [ ] RESET resets progress.
+- [x] SPIN works.
+- [x] BET + works.
+- [x] BET - works.
+- [x] AUTO toggles autoplay.
+- [x] HELP opens/closes.
+- [x] RESET resets progress.
 
 ## Free spins
-- [ ] Valid trigger awards free spins.
-- [ ] Scattered trigger symbols do not award free spins.
-- [ ] Free spins do not deduct balance.
-- [ ] Free spins update stats correctly.
+- [x] Valid trigger awards free spins.
+- [x] Scattered trigger symbols do not award free spins.
+- [x] Free spins do not deduct balance.
+- [x] Free spins update stats correctly.
 
 ## Save/load
-- [ ] Save file is created.
-- [ ] Balance persists.
-- [ ] Stats persist.
-- [ ] Reset persists.
-- [ ] Missing save file works.
-- [ ] Corrupt save file works.
+- [x] Save file is created.
+- [x] Balance persists.
+- [x] Stats persist.
+- [x] Reset persists.
+- [x] Missing save file works.
+- [x] Corrupt save file works.
 
 ## Final
-- [ ] Commit changes after successful test pass.
+- [x] Commit changes after a successful test passes.
