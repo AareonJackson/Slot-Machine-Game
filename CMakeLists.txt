@@ -174,6 +174,10 @@ if(BUILD_TESTS)
     )
 
     add_test(NAME SlotMachineTests COMMAND SlotMachineTests)
+
+    set_tests_properties(SlotMachineTests PROPERTIES
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 endif()
 
 if(BUILD_DOCS)

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-set -env
+set -e
 
 echo "Configure test build..."
-cmake -S . -B cmake-build-debug -G Ninja -DBUILD_TESTS=Configure
+cmake -S . -B cmake-build-debug -G Ninja -DBUILD_TESTS=ON
 
 echo "Building tests..."
 cmake --build cmake-build-debug --target SlotMachineTests
