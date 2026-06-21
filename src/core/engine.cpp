@@ -122,6 +122,21 @@ bool Engine::canStartSpin() const {
     return m_state == GameState::Idle && m_balance >= m_currentBet;
 }
 
+bool Engine::isLowBalance() const {
+    return m_balance < m_currentBet && m_freeSpinsRemaining <= 0;
+}
+
+void Engine::showLowBalanceMessage() {
+    m_autoPlayEnabled = false;
+    refreshModeText();
+
+    if (m_window) {
+        m_window->showWinMessage("LOW BALANCE\nPress RESET");
+    }
+
+    std::cout << "Low balance. Balance: " << m_balance << ", Bet: " << m_currentBet << std::endl;
+}
+
 void Engine::resetProgress() {
     if (m_state == GameState::Spinning) {
         return;
@@ -143,7 +158,6 @@ void Engine::resetProgress() {
     if (m_window) {
         m_window->clearHighlightedCells();
         m_window->clearWinMessage();
-        // updateReels(generateRandomDisplayGrid());
     }
 
     refreshStatusText();
@@ -165,7 +179,7 @@ void Engine::spin() {
     m_currentSpinIsFree = freeSpin;
 
     if (!freeSpin && m_balance < m_currentBet) {
-        std::cout << "Not enough money to spin! Balance: $" << m_balance << std::endl;
+        showLowBalanceMessage();
         return;
     }
 
@@ -287,13 +301,16 @@ void Engine::updateAutoPlay() {
         return;
     }
 
+    if (m_freeSpinsRemaining > 0) {
+        return;
+    }
+
     if (m_state != GameState::Idle) {
         return;
     }
 
     if (m_balance < m_currentBet) {
-        m_autoPlayEnabled = false;
-        refreshModeText();
+        showLowBalanceMessage();
         return;
     }
 
@@ -342,8 +359,11 @@ void Engine::increaseBet() {
         m_currentBet += m_betStep;
         m_lastWin = 0.0;
         refreshStatusText();
+        m_window->clearWinMessage();
 
        DEBUG_LOG("Bet increased to $" << m_currentBet);
+    } else if (isLowBalance()) {
+        showLowBalanceMessage();
     }
 }
 
@@ -356,6 +376,10 @@ void Engine::decreaseBet() {
         m_currentBet -= m_betStep;
         m_lastWin = 0.0;
         refreshStatusText();
+
+        if (!isLowBalance()) {
+            m_window->clearWinMessage();
+        }
 
         DEBUG_LOG("Bet decreased to $" << m_currentBet);
     }

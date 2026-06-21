@@ -36,5 +36,38 @@
 - [x] Missing save file works.
 - [x] Corrupt save file works.
 
+## Low Balance / Game Over
+### Test: Manual spin with low balance
+**Steps**
+1. Reduce balance below current bet.
+2. Click SPIN.
+
+**Expected Result**
+- [ ] Spin does not start.
+- [ ] Balance does not go negative.
+- [ ] Message appears: LOW BALANCE / Press RESET.
+- [ ] RESET button remains usable.
+
+### Test: Autoplay stops on low balance
+**Steps**
+1. Reduce balance near current bet.
+2. Enable autoplay.
+3. Let balance fall below bet.
+
+**Expected Result**
+- [ ] Autoplay stops.
+- [ ] No negative balance occurs.
+- [ ] Low-balance message appears.
+
+### Test: Reset clears low-balance message
+**Steps**
+1. Trigger low-balance state.
+2. Click RESET.
+
+**Expected Result**
+- [ ] Balance resets.
+- [ ] Stats reset.
+- [ ] Low-balance message disappears.
+
 ## Final
-- [x] Commit changes after a successful test passes.
+- [ ] Commit changes after a successful test passes.

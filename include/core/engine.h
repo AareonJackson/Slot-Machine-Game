@@ -34,6 +34,8 @@ private:
     void resetProgress();
     void increaseBet();
     void decreaseBet();
+    void showLowBalanceMessage();
+    bool isLowBalance() const;
     void refreshStatusText();
     void refreshStatsText();
     void refreshFreeSpinsText();
