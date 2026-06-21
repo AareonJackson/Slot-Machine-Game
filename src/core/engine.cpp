@@ -131,7 +131,7 @@ void Engine::showLowBalanceMessage() {
     refreshModeText();
 
     if (m_window) {
-        m_window->showWinMessage("LOW BALANCE\nPress RESET");
+        m_window->showWinMessage("LOW BALANCE");
     }
 
     std::cout << "Low balance. Balance: " << m_balance << ", Bet: " << m_currentBet << std::endl;
