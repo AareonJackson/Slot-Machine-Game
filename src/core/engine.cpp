@@ -54,6 +54,14 @@ Engine::Engine() {
     m_window->setResetCallback([this]() {
         resetProgress();
     });
+
+    m_window->setHelpCallback([this]() {
+        toggleHelp();
+    });
+
+    m_window->setEscapeCallback([this]() {
+        handleEscape();
+    });
 }
 
 Engine::~Engine() {
@@ -135,6 +143,30 @@ void Engine::showLowBalanceMessage() {
     }
 
     std::cout << "Low balance. Balance: " << m_balance << ", Bet: " << m_currentBet << std::endl;
+}
+
+void Engine::toggleHelp() {
+    if (m_autoPlayEnabled) {
+        m_autoPlayEnabled = false;
+        refreshModeText();
+    }
+
+    if (m_window) {
+        m_window->togglePaytable();
+    }
+}
+
+void Engine::handleEscape() {
+    if (m_window && m_window->isPaytableOpen()) {
+        m_window->closePaytable();
+        return;
+    }
+
+    if (m_autoPlayEnabled) {
+        m_autoPlayEnabled = false;
+        refreshModeText();
+        return;
+    }
 }
 
 void Engine::resetProgress() {
@@ -524,10 +556,13 @@ std::string Engine::buildPaytableText() const {
     }
 
     stream << "\nCONTROLS:\n";
-    stream << "SPIN : Start a new spin\n";
-    stream << "BET + : Increase bet\n";
-    stream << "BET - : Decrease bet\n";
-    stream << "HELP : Show/hide this screen\n";
+    stream << "SPIN / SPACE : Start a new spin\n";
+    stream << "BET + / UP / + : Increase bet\n";
+    stream << "BET - / DOWN / - : Decrease bet\n";
+    stream << "AUTO / A : Toggle autoplay\n";
+    stream << "HELP / H : Show/hide this screen\n";
+    stream << "RESET / R : Reset progress\n";
+    stream << "ESC : Close help or stop autoplay\n";
 
     stream << "\nBONUS FEATURE:\n";
     stream << "Land " << m_freeSpinTriggerCount << " or more "

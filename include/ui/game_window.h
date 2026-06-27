@@ -23,6 +23,9 @@ public:
     void updatePaytableText(const std::string& paytableText);
     void showWinMessage(const std::string& message);
     void clearWinMessage();
+    void togglePaytable();
+    void closePaytable();
+    bool isPaytableOpen() const;
     void setHighlightedCells(const std::vector<std::vector<bool>>& highlightedCells);
     void clearHighlightedCells();
     void setSpinCallback(std::function<void()> callback);
@@ -30,6 +33,8 @@ public:
     void setBetDownCallback(std::function<void()> callback);
     void setAutoPlayCallback(std::function<void()> callback);
     void setResetCallback(std::function<void()> callback);
+    void setHelpCallback(std::function<void()> callback);
+    void setEscapeCallback(std::function<void()> callback);
 
     // Getter just in case I want to pass the window to other UI components later
     sf::RenderWindow& getWindow();
@@ -70,4 +75,6 @@ private:
     std::function<void()> m_betDownCallback;
     std::function<void()> m_autoPlayCallback;
     std::function<void()> m_resetCallback;
+    std::function<void()> m_helpCallback;
+    std::function<void()> m_escapeCallback;
 };

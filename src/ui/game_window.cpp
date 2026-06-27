@@ -171,8 +171,11 @@ GameWindow::GameWindow(int width, int height, const std::string &title)
     });
 
     m_helpButton->setOnClick([this]() {
-        m_showPaytable = !m_showPaytable;
-        m_paytableScrollOffset = 0.0f;
+        if (m_helpCallback) {
+            m_helpCallback();
+        } else {
+            togglePaytable();
+        }
     });
 
     m_resetButton->setOnClick([this]() {
@@ -198,6 +201,63 @@ void GameWindow::pollEvents() {
     while (m_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             m_window.close();
+        }
+
+        if (event.type == sf::Event::KeyPressed) {
+            switch (event.key.code) {
+                case sf::Keyboard::Space:
+                    if (m_spinCallback) {
+                        m_spinCallback();
+                    }
+                    break;
+
+                case sf::Keyboard::A:
+                    if (m_autoPlayCallback) {
+                        m_autoPlayCallback();
+                    }
+                    break;
+
+                case sf::Keyboard::Up:
+                case sf::Keyboard::Add:
+                case sf::Keyboard::Equal:
+                    if (m_betUpCallback) {
+                        m_betUpCallback();
+                    }
+                    break;
+
+                case sf::Keyboard::Down:
+                case sf::Keyboard::Subtract:
+                case sf::Keyboard::Hyphen:
+                    if (m_betDownCallback) {
+                        m_betDownCallback();
+                    }
+                    break;
+
+                case sf::Keyboard::H:
+                    if (m_helpCallback) {
+                        m_helpCallback();
+                    } else {
+                        togglePaytable();
+                    }
+                    break;
+
+                case sf::Keyboard::R:
+                    if (m_resetCallback) {
+                        m_resetCallback();
+                    }
+                    break;
+
+                case sf::Keyboard::Escape:
+                    if (m_escapeCallback) {
+                        m_escapeCallback();
+                    } else if (m_showPaytable) {
+                        m_showPaytable = false;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
         }
         if (m_showPaytable && event.type == sf::Event::MouseWheelScrolled) {
             m_paytableScrollOffset -= event.mouseWheelScroll.delta * m_paytableScrollSpeed;
@@ -467,6 +527,26 @@ void GameWindow::setAutoPlayCallback(std::function<void()> callback) {
 
 void GameWindow::setResetCallback(std::function<void()> callback) {
     m_resetCallback = std::move(callback);
+}
+
+void GameWindow::setHelpCallback(std::function<void()> callback) {
+    m_helpCallback = std::move(callback);
+}
+
+void GameWindow::setEscapeCallback(std::function<void()> callback) {
+    m_escapeCallback = std::move(callback);
+}
+
+void GameWindow::togglePaytable() {
+    m_showPaytable = !m_showPaytable;
+}
+
+void GameWindow::closePaytable() {
+    m_showPaytable = false;
+}
+
+bool GameWindow::isPaytableOpen() const {
+    return m_showPaytable;
 }
 
 sf::RenderWindow& GameWindow::getWindow() {

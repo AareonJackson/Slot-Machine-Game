@@ -31,6 +31,8 @@ private:
     void toggleAutoPlay();
     void updateAutoPlay();
     bool canStartSpin() const;
+    void toggleHelp();
+    void handleEscape();
     void resetProgress();
     void increaseBet();
     void decreaseBet();
