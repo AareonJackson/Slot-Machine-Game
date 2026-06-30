@@ -39,6 +39,19 @@ void Button::setOnClick(std::function<void()> callback) {
     m_onClick = callback;
 }
 
+void Button::setText(const std::string& text) {
+    if (!m_hasFont) {
+        return;
+    }
+
+    m_text.setString(text);
+    sf::FloatRect textRect = m_text.getLocalBounds(); // set origin and position after setting text
+    m_text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+
+    sf::FloatRect buttonBound = m_shape.getGlobalBounds();
+    m_text.setPosition(buttonBound.left + buttonBound.width / 2.0f, buttonBound.top + buttonBound.height / 2.0f);
+}
+
 void Button::update(sf::Vector2i mousePos) {
     bool isHovered = m_shape.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
     if (m_state != State::Active) {

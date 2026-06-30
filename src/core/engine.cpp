@@ -33,6 +33,7 @@ Engine::Engine() {
     refreshStatsText();
     refreshFreeSpinsText();
     refreshModeText();
+    refreshAutoPlayButton();
     m_window->updatePaytableText(buildPaytableText());
 
     m_window->setSpinCallback([this]() {
@@ -137,6 +138,7 @@ bool Engine::isLowBalance() const {
 void Engine::showLowBalanceMessage() {
     m_autoPlayEnabled = false;
     refreshModeText();
+    refreshAutoPlayButton();
 
     if (m_window) {
         m_window->showWinMessage("LOW BALANCE");
@@ -149,6 +151,7 @@ void Engine::toggleHelp() {
     if (m_autoPlayEnabled) {
         m_autoPlayEnabled = false;
         refreshModeText();
+        refreshAutoPlayButton();
     }
 
     if (m_window) {
@@ -165,6 +168,7 @@ void Engine::handleEscape() {
     if (m_autoPlayEnabled) {
         m_autoPlayEnabled = false;
         refreshModeText();
+        refreshAutoPlayButton();
         return;
     }
 }
@@ -196,6 +200,7 @@ void Engine::resetProgress() {
     refreshStatsText();
     refreshFreeSpinsText();
     refreshModeText();
+    refreshAutoPlayButton();
 
     savePlayerSave();
 
@@ -316,10 +321,18 @@ void Engine::toggleAutoPlay() {
     m_autoPlayEnabled = !m_autoPlayEnabled;
 
     refreshModeText();
+    refreshAutoPlayButton();
 
     if (m_autoPlayEnabled) {
         if (!canStartSpin()) {
             m_autoPlayEnabled = false;
+            refreshModeText();
+            refreshAutoPlayButton();
+
+            if (isLowBalance()) {
+                showLowBalanceMessage();
+            }
+
             return;
         }
 
@@ -464,6 +477,12 @@ void Engine::refreshModeText() {
     }
 }
 
+void Engine::refreshAutoPlayButton() {
+    if (m_window) {
+        m_window->updateAutoPlayButton(m_autoPlayEnabled);
+    }
+}
+
 std::string Engine::getCurrentModeText() const {
     if (m_state == GameState::Spinning) {
         if (m_currentSpinIsFree) {
@@ -563,6 +582,11 @@ std::string Engine::buildPaytableText() const {
     stream << "HELP / H : Show/hide this screen\n";
     stream << "RESET / R : Reset progress\n";
     stream << "ESC : Close help or stop autoplay\n";
+
+    stream << "\nAUTOPLAY:\n";
+    stream << "Autoplay repeats paid spins until stopped or balance is too low.\n";
+    stream << "Opening HELP or pressing ESC stops autoplay.\n";
+    stream << "Free spins take priority over paid autoplay spins.\n";
 
     stream << "\nBONUS FEATURE:\n";
     stream << "Land " << m_freeSpinTriggerCount << " or more "

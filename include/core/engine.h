@@ -42,6 +42,7 @@ private:
     void refreshStatsText();
     void refreshFreeSpinsText();
     void refreshModeText();
+    void refreshAutoPlayButton();
     std::string getCurrentModeText() const;
     std::string buildWinMessage(double totalWin) const;
     void loadPlayerSave();

@@ -465,6 +465,18 @@ void GameWindow::updateModeText(const std::string& modeText) {
     m_modeText.setString("Mode: " + modeText);
 }
 
+void GameWindow::updateAutoPlayButton(bool autoPlayEnabled) {
+    if (!m_autoPlayButton) {
+        return;
+    }
+
+    if (autoPlayEnabled) {
+        m_autoPlayButton->setText("STOP");
+    } else {
+        m_autoPlayButton->setText("AUTO");
+    }
+}
+
 void GameWindow::updatePaytableText(const std::string& paytableText) {
     m_paytableText.setString(paytableText);
 

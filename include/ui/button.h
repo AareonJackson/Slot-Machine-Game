@@ -9,7 +9,7 @@ public:
 
     // Set the function to execute when the button is clicked
     void setOnClick(std::function<void()> callback);
-
+    void setText(const std::string& text);
     // Update hover state based on mouse position
     void update(sf::Vector2i mousePos);
 

@@ -20,6 +20,7 @@ public:
     void updateStatsText(int totalSpins, double totalWagered, double totalWon, double biggestWin);
     void updateFreeSpinsText(int freeSpinsRemaining);
     void updateModeText(const std::string& modeText);
+    void updateAutoPlayButton(bool autoPlayEnabled);
     void updatePaytableText(const std::string& paytableText);
     void showWinMessage(const std::string& message);
     void clearWinMessage();
