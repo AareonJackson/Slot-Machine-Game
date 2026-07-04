@@ -69,6 +69,7 @@ Engine::~Engine() {
     savePlayerSave();
 }
 
+
 void Engine::applyGameConfig() {
     const auto& gameConfig = ConfigManager::getInstance().getGameConfig();
 

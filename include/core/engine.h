@@ -28,6 +28,11 @@ private:
     void finishSpin();
     void animateSpin();
     void applyGameConfig();
+    double sanitizePositiveDouble(const std::string& name, double value, double fallback);
+    float sanitizePositiveFloat(const std::string& name, float value, float fallback) const;
+    int sanitizePositiveInt(const std::string& name, int value, int fallback) const;
+    double clampDouble(const std::string& name, double value, double minValue, double maxValue) const;
+    void validateSpinTiming(int reelCount);
     void toggleAutoPlay();
     void updateAutoPlay();
     bool canStartSpin() const;
