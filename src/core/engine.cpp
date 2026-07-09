@@ -156,8 +156,9 @@ void Engine::applyGameConfig() {
 
     if (m_maxBet < m_minBet) {
         std::cerr << "Invalid bet range: maxBet is lower than minBet. "
-                  << "Setting maxBet equal to minBet." << std::endl;
-        m_maxBet = m_minBet;
+                  << "Setting maxBet to 1 and minBet to 100." << std::endl;
+        m_minBet = 1.0;
+        m_maxBet = 100.0;
     }
 
     m_defaultBet = sanitizePositiveDouble("defaultBet", gameConfig.defaultBet, 10.0);
