@@ -69,5 +69,46 @@
 - [ ] Stats reset.
 - [ ] Low-balance message disappears.
 
-## Final
-- [ ] Commit changes after a successful test passes.
+## Config Validation
+
+### Test: Invalid bet values
+**Steps**
+1. Set defaultBet to a negative value.
+2. Launch game.
+
+**Expected Result**
+- Game starts.
+- Warning is printed.
+- Bet uses a safe fallback value.
+
+### Test: Invalid bet range
+**Steps**
+1. Set minBet higher than maxBet.
+2. Launch game.
+
+**Expected Result**
+- Game starts.
+- Warning is printed.
+- Bet range is corrected.
+
+### Test: Invalid spin timing
+**Steps**
+1. Set spinDurationSeconds too low.
+2. Launch game and spin.
+
+**Expected Result**
+- Game starts.
+- Warning is printed.
+- Reels still stop before payout.
+
+### Test: Invalid free spin settings
+**Steps**
+1. Set freeSpinTriggerSymbol to empty.
+2. Set freeSpinTriggerCount to zero.
+3. Set freeSpinsAwarded to negative.
+4. Launch game.
+
+**Expected Result**
+- Game starts.
+- Warnings are printed.
+- Safe fallback free spin settings are used.

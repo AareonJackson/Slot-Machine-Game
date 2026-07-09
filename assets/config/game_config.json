@@ -5,7 +5,7 @@
 
   "startingBalance": 1000.0,
   "defaultBet": 10.0,
-  "minBet": 1.0,
+  "minBet": 150.0,
   "maxBet": 100.0,
   "betStep": 5.0,
 

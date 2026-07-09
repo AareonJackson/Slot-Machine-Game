@@ -69,36 +69,141 @@ Engine::~Engine() {
     savePlayerSave();
 }
 
+double Engine::sanitizePositiveDouble(const std::string& name, double value, double fallback) {
+    if (value <= 0.0) {
+        std::cerr << "Invalid config value for " << name
+                  << ": " << value
+                  << ". Using fallback: " << fallback << std::endl;
+        return fallback;
+    }
+
+    return value;
+}
+
+float Engine::sanitizePositiveFloat(const std::string& name, float value, float fallback) const {
+    if (value <= 0.0f) {
+        std::cerr << "Invalid config value for " << name
+                  << ": " << value
+                  << ". Using fallback: " << fallback << std::endl;
+        return fallback;
+    }
+
+    return value;
+}
+
+int Engine::sanitizePositiveInt(const std::string& name, int value, int fallback) const {
+    if (value <= 0) {
+        std::cerr << "Invalid config value for " << name
+                  << ": " << value
+                  << ". Using fallback: " << fallback << std::endl;
+        return fallback;
+    }
+
+    return value;
+}
+
+double Engine::clampDouble(const std::string &name, double value, double minValue, double maxValue) const {
+    if (value < minValue) {
+        std::cerr << "Config value for " << name
+                  << " is below minimum. Value: " << value
+                  << ", minimum: " << minValue
+                  << ". Clamping to minimum." << std::endl;
+        return minValue;
+    }
+
+    if (value > maxValue) {
+        std::cerr << "Config value for " << name
+                  << " is above maximum. Value: " << value
+                  << ", maximum: " << maxValue
+                  << ". Clamping to maximum." << std::endl;
+        return maxValue;
+    }
+
+    return value;
+}
+
+void Engine::validateSpinTiming(int reelCount) {
+    if (reelCount <= 0) {
+        reelCount = 3;
+    }
+
+    float lastReelStopTime = m_firstReelStopTime + static_cast<float>(reelCount - 1) * m_delayBetweenReels;
+    float minimumFinishTime = lastReelStopTime + 0.4f;
+
+    if (m_spinDurationSeconds <= lastReelStopTime) {
+        std::cerr << "spinDurationSeconds is too short for reel stop timing. "
+                  << "Extending from " << m_spinDurationSeconds
+                  << " to " << minimumFinishTime << std::endl;
+
+        m_spinDurationSeconds = minimumFinishTime;
+    }
+}
 
 void Engine::applyGameConfig() {
     const auto& gameConfig = ConfigManager::getInstance().getGameConfig();
+    const auto& reelsConfig = ConfigManager::getInstance().getReelsConfig();
 
     m_defaultBalance = gameConfig.startingBalance;
-    m_defaultBet = gameConfig.defaultBet;
-
-    m_balance = gameConfig.startingBalance;
-    m_currentBet = gameConfig.defaultBet;
-    m_minBet = gameConfig.minBet;
-    m_maxBet = gameConfig.maxBet;
-    m_betStep = gameConfig.betStep;
-
-    m_spinDurationSeconds = gameConfig.spinDurationSeconds;
-    m_firstReelStopTime = gameConfig.firstReelStopTime;
-    m_delayBetweenReels = gameConfig.delayBetweenReels;
-
-    m_autoPlayDelaySeconds = gameConfig.autoplayDelaySeconds;
-
-    m_freeSpinTriggerSymbol = gameConfig.freeSpinTriggerSymbol;
-    m_freeSpinTriggerCount = gameConfig.freeSpinTriggerCount;
-    m_freeSpinsAwardAmount = gameConfig.freeSpinsAwarded;
-    m_freeSpinDelaySeconds = gameConfig.freeSpinDelaySeconds;
-
-    if (m_currentBet < m_minBet) {
-        m_currentBet = m_minBet;
+    if (m_defaultBalance < 0.0) {
+        std::cerr << "Invalid config value for startingBalance: "
+                  << m_defaultBalance
+                  << ". Using fallback: 1000" << std::endl;
+        m_defaultBalance = 1000.0;
     }
 
-    if (m_currentBet > m_maxBet) {
-        m_currentBet = m_maxBet;
+    m_minBet = sanitizePositiveDouble("minBet", gameConfig.minBet, 1.0);
+    m_maxBet = sanitizePositiveDouble("maxBet", gameConfig.maxBet, 100.0);
+
+    if (m_maxBet < m_minBet) {
+        std::cerr << "Invalid bet range: maxBet is lower than minBet. "
+                  << "Setting maxBet equal to minBet." << std::endl;
+        m_maxBet = m_minBet;
+    }
+
+    m_defaultBet = sanitizePositiveDouble("defaultBet", gameConfig.defaultBet, 10.0);
+    m_defaultBet = clampDouble("defaultBet", m_defaultBet, m_minBet, m_maxBet);
+
+    m_betStep = sanitizePositiveDouble("betStep", gameConfig.betStep, 5.0);
+
+    m_balance = m_defaultBalance;
+    m_currentBet = m_defaultBet;
+
+    m_spinDurationSeconds = sanitizePositiveFloat("spinDurationSeconds", gameConfig.spinDurationSeconds, 3.2f);
+    m_firstReelStopTime = gameConfig.firstReelStopTime;
+    if (m_firstReelStopTime < 0.0f) {
+        std::cerr << "Invalid config value for firstReelStopTime: "
+                  << m_firstReelStopTime
+                  << ". Using fallback: 0.8" << std::endl;
+        m_firstReelStopTime = 0.8f;
+    }
+
+    m_delayBetweenReels = sanitizePositiveFloat("delayBetweenReels", gameConfig.delayBetweenReels, 1.0f);
+    validateSpinTiming(reelsConfig.num_reels);
+
+    m_autoPlayDelaySeconds = gameConfig.autoplayDelaySeconds;
+    if (m_autoPlayDelaySeconds < 0.0f) {
+        std::cerr << "Invalid config value for autoplayDelaySeconds: "
+                  << m_autoPlayDelaySeconds
+                  << ". Using fallback: 0.75" << std::endl;
+        m_autoPlayDelaySeconds = 0.75f;
+    }
+
+    m_freeSpinTriggerSymbol = gameConfig.freeSpinTriggerSymbol;
+    if (m_freeSpinTriggerSymbol.empty()) {
+        std::cerr << "Invalid config value for freeSpinTriggerSymbol: empty string. "
+                  << "Using fallback: BELL" << std::endl;
+        m_freeSpinTriggerSymbol = "BELL";
+    }
+
+    m_freeSpinTriggerCount = sanitizePositiveInt("freeSpinTriggerCount", gameConfig.freeSpinTriggerCount, 3);
+    m_freeSpinsAwardAmount = sanitizePositiveInt("freeSpinsAwarded", gameConfig.freeSpinsAwarded, 5);
+
+    m_freeSpinDelaySeconds = gameConfig.freeSpinDelaySeconds;
+    if (m_freeSpinDelaySeconds < 0.0f) {
+        std::cerr << "Invalid config value for freeSpinDelaySeconds: "
+                  << m_freeSpinDelaySeconds
+                  << ". Using fallback: 0.9" << std::endl;
+        m_freeSpinDelaySeconds = 0.9f;
     }
 }
 

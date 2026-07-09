@@ -3,7 +3,6 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-// 1. Define the standard C++ struct
 struct GameConfig {
     std::string gameTitle = "The Slot Game";
     int windowWidth = 1200;
