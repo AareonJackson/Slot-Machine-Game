@@ -157,6 +157,8 @@ if(BUILD_TESTS)
             tests/test_main.cpp
             tests/test_save_manager.cpp
             tests/test_payout.cpp
+            tests/test_rng.cpp
+            tests/test_config_models.cpp
             src/config/save_manager.cpp
             src/config/config_manager.cpp
             src/core/payout.cpp
