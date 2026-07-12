@@ -7,8 +7,6 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-#include "config/config_models.h"
-
 using json = nlohmann::json;
 
 void runConfigModelTests() {
