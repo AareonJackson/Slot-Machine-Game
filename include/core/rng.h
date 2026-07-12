@@ -7,7 +7,7 @@ public:
     // Initialize the RNG with a safe seed
     RNG() = default;
 
-    // Ensure a uncorrupted state of randomness
+    // Ensure an uncorrupted state of randomness
     // Delete copy constructors
     RNG(const RNG&) = delete;
     RNG& operator=(const RNG&) = delete;

@@ -160,6 +160,7 @@ if(BUILD_TESTS)
             src/config/save_manager.cpp
             src/config/config_manager.cpp
             src/core/payout.cpp
+            src/core/rng.cpp
     )
 
     target_include_directories(SlotMachineTests
