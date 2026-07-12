@@ -3,9 +3,17 @@
 #include <iostream>
 #include <vector>
 
+/*
+ * @Purpose: Verifies the RNG class produces valid bounded values for slot reel stops and
+ * general random integer requests. These tests confirm that generated stop
+ * positions match the number of provided reels, stay within each reel's valid
+ * index range, gracefully handle invalid reel lengths by returning 0, normalize
+ * reversed min/max bounds, and correctly handle identical bounds.
+ */
+
 void runRngTests() {
     std::cout << "Running RNG tests...\n";
-
+    // Unit Test Case 1: generateStops with valid reel lengths
     {
         RNG rng;
         std::vector<int> reelLengths = {5, 10, 20};
@@ -19,7 +27,7 @@ void runRngTests() {
             assert(stops[i] < reelLengths[i]);
         }
     }
-
+    // Unit Test Case 2: generateStops with invalid reel lengths returns 0
     {
         RNG rng;
         std::vector<int> reelLengths = {0, -5, 3};
@@ -32,7 +40,7 @@ void runRngTests() {
         assert(stops[2] >= 0);
         assert(stops[2] < 3);
     }
-
+    // Unit Test Case 3: getRandomInt result is within range; if min > max, it still returns within corrected range
     {
         RNG rng;
 
@@ -42,7 +50,7 @@ void runRngTests() {
             assert(value <= 10);
         }
     }
-
+    // Unit Test Case 4: getRandomInt result is within range; if min == max, it returns the same value
     {
         RNG rng;
 
