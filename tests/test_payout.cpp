@@ -54,5 +54,48 @@ void runPayoutTests() {
         }
     }
 
+    {
+        std::vector<std::vector<std::string>> emptyGrid;
+
+        double betAmount = 10.0;
+        std::vector<WinLine> wins = payoutCalculator.calculateWin(emptyGrid, betAmount);
+
+        assert(wins.empty());
+    }
+
+    {
+        std::vector<std::vector<std::string>> grid = {
+            {"CHERRY", "LEMON", "BAR"},
+            {"CHERRY", "BELL", "SEVEN"},
+            {"CHERRY", "BAR", "LEMON"}
+        };
+
+        double betAmount = 0.0;
+        std::vector<WinLine> wins = payoutCalculator.calculateWin(grid, betAmount);
+
+        for (const auto& win : wins) {
+            assert(win.win_amount == 0.0);
+        }
+    }
+
+    {
+        std::vector<std::vector<std::string>> grid = {
+            {"SEVEN", "SEVEN", "SEVEN"},
+            {"SEVEN", "SEVEN", "SEVEN"},
+            {"SEVEN", "SEVEN", "SEVEN"}
+        };
+
+        double betAmount = 10.0;
+        std::vector<WinLine> wins = payoutCalculator.calculateWin(grid, betAmount);
+
+        assert(!wins.empty());
+
+        for (const auto& win : wins) {
+            assert(win.symbol == "SEVEN");
+            assert(win.match_count >= 1);
+            assert(win.win_amount >= 0.0);
+        }
+    }
+
     std::cout << "PayoutCalculator tests passed.\n";
 }
