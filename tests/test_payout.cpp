@@ -13,6 +13,7 @@ void runPayoutTests() {
 
     PayoutCalculator payoutCalculator;
 
+    // Unit Test Case 1: Ensure a known 3-symbol win, confirms payout works.
     {
         std::vector<std::vector<std::string>> grid = {
             {"CHERRY", "LEMON", "BAR"},
@@ -36,6 +37,7 @@ void runPayoutTests() {
         assert(foundCherryWin);
     }
 
+    // Unit Test Case 2: Ensure no matching payline, confirms no false positives.
     {
         std::vector<std::vector<std::string>> grid = {
             {"CHERRY", "LEMON", "BAR"},
@@ -54,6 +56,7 @@ void runPayoutTests() {
         }
     }
 
+    // Unit Test Case 3: Empty grid, confirms safe handling
     {
         std::vector<std::vector<std::string>> emptyGrid;
 
@@ -63,6 +66,7 @@ void runPayoutTests() {
         assert(wins.empty());
     }
 
+    // Unit Test Case 4: Zero bet amount, confirms no crash
     {
         std::vector<std::vector<std::string>> grid = {
             {"CHERRY", "LEMON", "BAR"},
@@ -78,6 +82,7 @@ void runPayoutTests() {
         }
     }
 
+    // Unit Test Case 5: Mixed grid win, confirms stable behavior
     {
         std::vector<std::vector<std::string>> grid = {
             {"SEVEN", "SEVEN", "SEVEN"},
