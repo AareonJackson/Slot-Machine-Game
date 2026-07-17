@@ -29,26 +29,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
-# Check if SFML exists in the specified external directory
-set(SFML_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/sfml")
-if(EXISTS "${SFML_LOCAL_PATH}")
-    message(STATUS "Using local SFML from ${SFML_LOCAL_PATH}")
-
-    if(EXISTS "${SFML_LOCAL_PATH}/lib/cmake/SFML/SFMLConfig.cmake")
-        set(SFML_DIR "${SFML_LOCAL_PATH}/lib/cmake/SFML")
-        find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
-    elseif(EXISTS "${SFML_LOCAL_PATH}/CMakeLists.txt")
-        set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "Build the SFML examples" FORCE)
-        set(SFML_BUILD_DOC OFF CACHE BOOL "Build the SFML documentation" FORCE)
-        set(SFML_BUILD_NETWORK OFF CACHE BOOL "Build the SFML network module" FORCE)
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
-
-        add_subdirectory(${SFML_LOCAL_PATH} sfml_build)
-    else()
-        message(FATAL_ERROR "SFML directory exists but doesn't contain expected files. Please ensure SFML is properly placed in ${SFML_LOCAL_PATH}")
-    endif()
-else()
-    message(STATUS "Local SFML not found at ${SFML_LOCAL_PATH}, downloading it...")
+# Configure SFML build options
+set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "Build the SFML examples" FORCE)
+set(SFML_BUILD_DOC OFF CACHE BOOL "Build the SFML documentation" FORCE)
+set(SFML_BUILD_NETWORK OFF CACHE BOOL "Build the SFML network module" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 
     include(FetchContent)
     FetchContent_Declare(
@@ -57,22 +42,18 @@ else()
             GIT_TAG 2.6.1
     )
 
-    # Configure SFML build options
-    set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "Build the SFML examples" FORCE)
-    set(SFML_BUILD_DOC OFF CACHE BOOL "Build the SFML documentation" FORCE)
-    set(SFML_BUILD_NETWORK OFF CACHE BOOL "Build the SFML network module" FORCE)
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 
     # WORKAROUND FOR MACOS CMAKE CASE-SENSITIVITY BUG
     # SFML requests VORBIS but provides FindVorbis.cmake. CMake's strict casing rejects it.
     # We create a proxy file in an isolated directory to safely bypass this check.
+if(APPLE)
     set(PROXY_MODULE_DIR "${CMAKE_BINARY_DIR}/cmake_proxy")
     file(MAKE_DIRECTORY "${PROXY_MODULE_DIR}")
     file(WRITE "${PROXY_MODULE_DIR}/FindVORBIS.cmake" "include(\"${CMAKE_BINARY_DIR}/_deps/sfml-src/cmake/Modules/FindVorbis.cmake\")\n")
     list(INSERT CMAKE_MODULE_PATH 0 "${PROXY_MODULE_DIR}")
-
-    FetchContent_MakeAvailable(SFML)
 endif()
+
+FetchContent_MakeAvailable(SFML)
 
 # Common compiler warnings
 if(MSVC)
